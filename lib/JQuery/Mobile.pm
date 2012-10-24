@@ -8,8 +8,8 @@ our @EXPORT_OK = qw(new head header footer popup page pages form listview collap
 use Clone qw(clone);
 use HTML::Entities qw(encode_entities);
 
-our $VERSION = 0.01;
-# 36.3
+our $VERSION = 0.02;
+# 36.4
 
 sub new {
 	my ($class, %args) = (@_);
@@ -756,7 +756,7 @@ Here is a list of optional parameters when instantiating a JQuery::Mobile object
      }
   );
 
-The allowed HTML and data-* attributes for each UI component can be customised. By default, HTML attributes are very stict to ensure a clean markup. For data-* attributes, see reference: http://jquerymobile.com/test/docs/api/data-attributes.html.
+The allowed HTML and data-* attributes for each UI component can be customised. By default, HTML attributes are very strict to ensure a clean markup. For data-* attributes, see reference: http://jquerymobile.com/test/docs/api/data-attributes.html.
 
   # default values are shown
   my $jquery_mobile = JQuery::Mobile->new(
