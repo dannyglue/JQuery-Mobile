@@ -8,8 +8,8 @@ our @EXPORT_OK = qw(new head header footer popup page pages form listview collap
 use Clone qw(clone);
 use HTML::Entities qw(encode_entities);
 
-our $VERSION = 0.02;
-# 36.4
+our $VERSION = 0.03;
+# 38.4
 
 sub new {
 	my ($class, %args) = (@_);
@@ -280,13 +280,13 @@ sub collapsible_set {
 sub collapsible {
 	my ($self, %args) = @_;
 
-	if ($args{title} && $args{listview}) {
+	if ($args{listview}) {
 		if ($args{active} && ! exists $args{listview}->{active}) {
 			$args{listview}->{active} = $args{active};
 		}
 
-		$args{content} = '          <h1>' . $args{title} . '</h1>' . "\n" .  $self->listview(%{$args{listview}});
-
+		$args{title} ||= 'Title';
+		$args{content} = '          <h1>' . $args{title} . '</h1>' . "\n" . $self->listview(%{$args{listview}});
 		$args{collapsed} = 'false' if ! exists $args{collapsed} && $args{content} =~ /ui-btn-active/;
 	}
 	else {
