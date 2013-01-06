@@ -8,8 +8,8 @@ our @EXPORT_OK = qw(new head header footer popup page pages form listview collap
 use Clone qw(clone);
 use HTML::Entities qw(encode_entities);
 
-our $VERSION = 0.03;
-# 38.4
+our $VERSION = 0.02;
+# 40.4
 
 sub new {
 	my ($class, %args) = (@_);
@@ -414,9 +414,11 @@ sub controlgroup {
 	my $attributes = _html_attribute('', $self->{config}->{'controlgroup-html-attribute'}, \%args);
 	$attributes = _data_attribute($attributes, $self->{config}->{'controlgroup-data-attribute'}, \%args);
 
-	my $controlgroup = '<div data-role="controlgroup"'. $attributes . '>' . "\n";
+	my $element = $args{fieldset} ? 'fieldset' : 'div';
+
+	my $controlgroup = '<' . $element . ' data-role="controlgroup"'. $attributes . '>' . "\n";
 	$controlgroup .= $args{content} . "\n";
-	$controlgroup .= '</div><!-- /controlgroup -->';
+	$controlgroup .= '</' . $element . '><!-- /controlgroup -->';
 	return $controlgroup;
 }
 
@@ -579,8 +581,6 @@ sub _radio_checkbox {
 	$args{id} ||= $args{name};
 	$args{label} ||= _label($args{name});
 
-	$args{value} = encode_entities($args{value});
-
 	my $data_attributes = _data_attribute('', $self->{config}->{'radio-checkbox-data-attribute'}, \%args);
 	my $cloned_args = clone(\%args);
 	my $options = '';
@@ -592,8 +592,49 @@ sub _radio_checkbox {
 			my $html_attributes = _html_attribute('', $self->{config}->{'radio-checkbox-html-attribute'}, $cloned_args);
 
 			my $checked = '';
-			$checked = ' checked="checked"' if defined $args{value} && $key eq $args{value};
+
+			if (defined $args{value}) {
+
+				if (ref $args{value} eq 'HASH') {
+					foreach my $value_key (keys %{$args{value}}) {
+						if ($key eq $value_key) {
+							$checked = ' checked="checked"';
+							last;
+						}
+					}
+				}
+				elsif ($key eq $args{value}) {
+					$checked = ' checked="checked"';
+				}
+			}
+
 			$options .= '<input type="' . $args{type} . '" name="' . $args{name} . '"' . $html_attributes . $data_attributes . $checked . ' /><label for="' . $cloned_args->{id} . '">' . $args{options}->{$key} . '</label>';
+		}
+	}
+	elsif (ref $args{options} eq 'ARRAY') {
+		foreach my $key (@{$args{options}}) {
+			$cloned_args->{id} = $args{name} . '-' . _urlise($key);
+			$cloned_args->{value} = $key;
+			my $html_attributes = _html_attribute('', $self->{config}->{'radio-checkbox-html-attribute'}, $cloned_args);
+
+			my $checked = '';
+
+			if (defined $args{value}) {
+
+				if (ref $args{value} eq 'ARRAY') {
+					foreach my $element (@{$args{value}}) {
+						if ($key eq $element) {
+							$checked = ' checked="checked"';
+							last;
+						}
+					}
+				}
+				elsif ($key eq $args{value}) {
+					$checked = ' checked="checked"';
+				}
+			}
+
+			$options .= '<input type="' . $args{type} . '" name="' . $args{name} . '"' . $html_attributes . $data_attributes . $checked . ' /><label for="' . $cloned_args->{id} . '">' . $key . '</label>';
 		}
 	}
 	else {
@@ -609,7 +650,12 @@ sub _radio_checkbox {
 	}
 
 	my $invalid = $args{invalid} ? $self->{config}->{invalid}->(\%args) : '';
-	return '          <div data-role="fieldcontain"><fieldset data-role="controlgroup"><legend>' . $self->{config}->{label}->(\%args) .  ':</legend>' . $options . '</fieldset>' . $invalid . '</div>' . "\n";
+	
+	my $controlgroup = clone ($args{controlgroup});
+	$controlgroup->{fieldset} = 1;
+	$controlgroup->{content} ||= '<legend>' . $self->{config}->{label}->(\%args) .  ':</legend>' . $options . $invalid;
+
+	return $self->controlgroup(%{$controlgroup});
 }
 
 sub _header_footer_attribute {
