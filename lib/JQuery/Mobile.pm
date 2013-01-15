@@ -9,7 +9,7 @@ use Clone qw(clone);
 use HTML::Entities qw(encode_entities);
 
 our $VERSION = 0.02;
-# 40.4
+# 41.4
 
 sub new {
 	my ($class, %args) = (@_);
@@ -273,7 +273,7 @@ sub collapsible_set {
 	my $attributes = _html_attribute('', $self->{config}->{'collapsible-set-html-attribute'}, \%args);
 	$attributes = _data_attribute($attributes, $self->{config}->{'collapsible-set-data-attribute'}, \%args);
 
-	my $collapsible_set = '        <div data-role="collapsible-set"' . $attributes . '>' . "\n" . $args{content} . "\n" . '        </div>';
+	my $collapsible_set = '        <div data-role="collapsible-set"' . $attributes . '>' . "\n" . $args{content} . "\n" . '        </div>' . "\n";
 	return $collapsible_set;
 }
 
@@ -290,13 +290,13 @@ sub collapsible {
 		$args{collapsed} = 'false' if ! exists $args{collapsed} && $args{content} =~ /ui-btn-active/;
 	}
 	else {
-		$args{content} ||= '            <p>Collapsible Content</p>';
+		$args{content} ||= '            <h1>Collapsible Title</h1><p>Collapsible Content</p>';
 	}
 
 	my $attributes = _html_attribute('', $self->{config}->{'collapsible-html-attribute'}, \%args);
 	$attributes = _data_attribute($attributes, $self->{config}->{'collapsible-data-attribute'}, \%args);
 
-	my $collapsible = '          <div data-role="collapsible"' . $attributes . '>' . "\n" . $args{content} . "\n" . '          </div>';
+	my $collapsible = '          <div data-role="collapsible"' . $attributes . '>' . "\n" . $args{content} . "\n" . '          </div>' . "\n";
 	return $collapsible;
 }
 
@@ -418,7 +418,7 @@ sub controlgroup {
 
 	my $controlgroup = '<' . $element . ' data-role="controlgroup"'. $attributes . '>' . "\n";
 	$controlgroup .= $args{content} . "\n";
-	$controlgroup .= '</' . $element . '><!-- /controlgroup -->';
+	$controlgroup .= '</' . $element . '><!-- /controlgroup -->' . "\n";
 	return $controlgroup;
 }
 
@@ -526,7 +526,7 @@ sub textarea {
 	$attributes = _data_attribute($attributes, $self->{config}->{'textarea-data-attribute'}, \%args);
 
 	my $invalid = $args{invalid} ? $self->{config}->{invalid}->(\%args) : '';
-	return '          <div data-role="fieldcontain"><label for="' . $args{id} . '">' . $self->{config}->{label}->(\%args) .  ':</label><textarea' . $attributes . '>' . $args{value} . '</textarea>' . $invalid . '</div>'. "\n";
+	return '          <div data-role="fieldcontain"><label for="' . $args{id} . '">' . $self->{config}->{label}->(\%args) .  ':</label><textarea' . $attributes . '>' . $args{value} . '</textarea>' . $invalid . '</div>' . "\n";
 }
 
 sub select {
