@@ -3,13 +3,13 @@ use strict;
 use warnings;
 no warnings 'uninitialized';
 use Exporter 'import';
-our @EXPORT_OK = qw(new head header footer popup page pages form listview collapsible collapsible_set navbar button controlgroup input select checkbox radio textarea);
+our @EXPORT_OK = qw(new head header footer table panel popup page pages form listview collapsible collapsible_set navbar button controlgroup input rangeslider select checkbox radio textarea);
 
 use Clone qw(clone);
 use HTML::Entities qw(encode_entities);
 
 our $VERSION = 0.02;
-# 41.4
+# 42.4
 
 sub new {
 	my ($class, %args) = (@_);
@@ -41,11 +41,17 @@ sub new {
 		'navbar-item-data-attribute' => ['ajax', 'icon', 'iconpos', 'iconshadow','prefetch', 'theme'],
 		'page-html-attribute' => ['id', 'class'],
 		# combine data-attributes for page and dialog
-		'page-data-attribute' => ['add-back-btn', 'back-btn-text', 'back-btn-theme', 'close-btn-text', 'corners', 'dom-cache', 'enhance', 'overlay-theme', 'role', 'shadow','theme', 'title', 'tolerance', 'url'],
+		'page-data-attribute' => ['add-back-btn', 'back-btn-text', 'back-btn-theme', 'close-btn', 'close-btn-text', 'corners', 'dom-cache', 'enhance', 'overlay-theme', 'role', 'shadow','theme', 'title', 'tolerance', 'url'],
+		'table-html-attribute' => ['id', 'class'],
+		'table-data-attribute' => ['mode'],
+		'table-head-html-attribute' => ['id', 'class'],
+		'table-head-data-attribute' => ['priority'],
+		'panel-html-attribute' => ['id', 'class'],
+		'panel-data-attribute' => ['corners', 'overlay-theme', 'shadow', 'theme', 'tolerance', 'position-to', 'rel', 'role', 'transition'],
 		'popup-html-attribute' => ['id', 'class'],
-		'popup-data-attribute' => ['corners', 'overlay-theme', 'shadow', 'theme', 'tolerance', 'position-to', 'rel', 'role', 'transition'],
+		'popup-data-attribute' => ['animate', 'dismissible', 'display', 'position', 'position-fixed', 'swipe-close', 'role', 'theme'],
 		'listview-html-attribute' => ['id', 'class'],
-		'listview-data-attribute' => ['autodividers', 'count-theme', 'divider-theme', 'enhance', 'filter', 'filter-placeholder', 'filter-theme', 'filtertext', 'header-theme', 'inset', 'split-icon', 'split-theme', 'theme'],
+		'listview-data-attribute' => ['autodividers', 'count-theme', 'divider-theme', 'enhance', 'filter', 'filter-placeholder', 'filter-reveal', 'filter-theme', 'filtertext', 'header-theme', 'inset', 'split-icon', 'split-theme', 'theme'],
 		'listview-item-html-attribute' => ['id', 'class'],
 		'listview-item-data-attribute' => ['ajax', 'mini', 'rel', 'theme', 'transition'],
 		'collapsible-html-attribute' => ['id', 'class'],
@@ -60,13 +66,15 @@ sub new {
 		'form-html-attribute' => ['id', 'action', 'class', 'enctype', 'method'],
 		'form-data-attribute' => ['enhance', 'theme', 'ajax'],
 		'input-html-attribute' => ['id', 'class', 'disabled', 'max', 'maxlength', 'min', 'name', 'pattern', 'placeholder', 'readonly', 'required', 'size', 'type', 'value', 'accept', 'capture'],
-		'input-data-attribute' => ['corners', 'highlight', 'icon', 'iconpos', 'iconshadow', 'inline', 'mini', 'shadow', 'theme', 'track-theme'],
+		'input-data-attribute' => ['clear-btn', 'clear-btn-text', 'corners', 'highlight', 'icon', 'iconpos', 'iconshadow', 'inline', 'mini', 'shadow', 'theme', 'track-theme'],
 		'textarea-html-attribute' => ['id', 'name', 'class', 'rows', 'cols', 'readonly', 'disabled', 'title', 'required', 'placeholder', 'title', 'pattern'],
-		'textarea-data-attribute' => ['mini', 'theme'],
+		'textarea-data-attribute' => ['clear-btn', 'clear-btn-text', 'mini', 'theme'],
 		'select-html-attribute' => ['id', 'class', 'size', 'maxlength', 'readonly', 'disabled', 'title', 'required', 'placeholder', 'title', 'pattern'],
 		'select-data-attribute' => ['icon', 'iconpos', 'inline', 'mini', 'native-menu', 'overlay-theme', 'placeholder', 'theme'],
 		'radio-checkbox-html-attribute' => ['id', 'class', 'readonly', 'disabled', 'title', 'required', 'placeholder', 'title', 'pattern', 'value'],
 		'radio-checkbox-data-attribute' => ['mini', 'theme'],
+		'rangeslider-html-attribute' => ['id', 'name', 'class'],
+		'rangeslider-data-attribute' => ['highlight', 'mini', 'theme', 'track-theme'],
 		'label' => sub {
 			my $args = shift;
 			return '<strong>' . $args->{label} . '</strong>' if $args->{required};
@@ -202,6 +210,54 @@ sub navbar {
 	return $navbar;
 }
 
+sub panel {
+	my ($self, %args) = @_;
+
+	$args{content} ||= '          <p>Panel Content</p>';
+	$args{role} = 'panel';
+
+	my $attributes = _html_attribute('', $self->{config}->{'panel-html-attribute'}, \%args);
+	$attributes = _data_attribute($attributes, $self->{config}->{'panel-data-attribute'}, \%args);
+
+	my $panel = '        <div' . $attributes . '>' . "\n";
+	$panel .= $args{content} . "\n";
+	$panel .= '        </div><!-- /panel -->' . "\n";
+
+	return $panel;
+}
+
+sub table {
+	my ($self, %args) = @_;
+
+	unless ($args{content}) {
+
+		$args{content} =  '          <thead>' . "\n" . '            <tr>' . "\n";
+		foreach my $header (@{$args{headers}}) {
+
+			my $head_attributes = '';
+			if ($args{th} && exists $args{th}->{$header}) {
+				$head_attributes = _html_attribute($head_attributes, $self->{config}->{'table-head-html-attribute'}, $args{th}->{$header});
+				$head_attributes = _data_attribute($head_attributes, $self->{config}->{'table-head-data-attribute'}, $args{th}->{$header});
+			}
+
+			$args{content} .= '              <th' . $head_attributes . '>' . $header . '</th>' . "\n";
+		}
+		$args{content} .=  '            </tr>' . "\n" . '          </thead>' . "\n";
+
+		$args{content} .=  '          <tbody>'. "\n";
+		foreach my $row (@{$args{rows}}) {
+			$args{content} .=  '            <tr>' . "\n" . join("\n", map ({'              <td>' . $_ . '</td>'} @{$row})) . "\n" . '            </tr>' . "\n";
+		}
+		$args{content} .=  '          </tbody>';
+	}
+
+	my $attributes = _html_attribute('', $self->{config}->{'table-html-attribute'}, \%args);
+	$attributes = _data_attribute($attributes, $self->{config}->{'table-data-attribute'}, \%args);
+
+	my $table = '        <table data-role="table"' . $attributes . '>' . "\n" . $args{content} . "\n" . '        </table>' . "\n";
+	return $table;
+}
+
 sub popup {
 	my ($self, %args) = @_;
 
@@ -229,6 +285,7 @@ sub page {
 
 	my $page = '    <div' . $attributes . '>' . "\n";
 	$page .= $self->header(%{$args{header}}) if $args{header};
+	$page .= $self->panel(%{$args{panel}}) if $args{panel};
 	$page .= '      <div data-role="content">' . "\n" . $args{content} . "\n" . '      </div><!-- /content -->' . "\n";
 	$page .= $args{after} if $args{after};
 	$page .= $self->footer(%{$args{footer}}) if $args{footer};
@@ -328,7 +385,7 @@ sub listview {
 
 	my $list = '        <' . $list_tag . ' data-role="listview"' . $attributes . '>' . "\n";
 	
-	my $divider = '';
+	my $divider = ''; 
 
 	foreach my $item (@{$args{items}}) {
 
@@ -416,9 +473,9 @@ sub controlgroup {
 
 	my $element = $args{fieldset} ? 'fieldset' : 'div';
 
-	my $controlgroup = '<' . $element . ' data-role="controlgroup"'. $attributes . '>' . "\n";
-	$controlgroup .= $args{content} . "\n";
-	$controlgroup .= '</' . $element . '><!-- /controlgroup -->' . "\n";
+	my $controlgroup = '          <' . $element . ' data-role="controlgroup"'. $attributes . '>' . "\n";
+	$controlgroup .= '          ' . $args{content} . "\n";
+	$controlgroup .= '          </' . $element . '><!-- /controlgroup -->' . "\n";
 	return $controlgroup;
 }
 
@@ -453,7 +510,7 @@ sub form {
 
 	if ($args{fields}) {
 		foreach my $field (@{$args{fields}}) {
-			if ($field->{type} && $field->{type} =~ /^(select|radio|checkbox|textarea)$/) {
+			if ($field->{type} && $field->{type} =~ /^(select|radio|checkbox|textarea|rangeslider)$/) {
 				my $type = delete $field->{type};
 				$content .= $self->$type(%{$field});
 			}
@@ -494,9 +551,28 @@ sub form {
 	return $form;
 }
 
-sub input {
+sub rangeslider {
 	my ($self, %args) = @_;
 
+	my $attributes = _html_attribute('', $self->{config}->{'rangeslider-html-attribute'}, \%args);
+	$attributes = _data_attribute($attributes, $self->{config}->{'rangeslider-data-attribute'}, \%args);
+
+	$args{from}->{type} = 'range';
+	$args{to}->{type} = 'range';
+	my $from = '              ' . $self->_input(%{$args{from}}) . "\n";
+	my $to = '              ' . $self->_input(%{$args{to}});
+
+	my $invalid = $args{invalid} ? $self->{config}->{invalid}->(\%args) : '';
+
+	my $rangeslider = '          <div data-role="fieldcontain">' . "\n" . '            <div data-role="rangeslider"' . $attributes . '>' . "\n";
+	$rangeslider .= $from . $to . $invalid . "\n";
+	$rangeslider .= "            </div>\n          </div>\n";
+
+	return $rangeslider;
+}
+
+sub _input {
+	my ($self, %args) = @_;
 	$args{type} ||= 'text';
 	$args{id} ||= $args{name};
 	$args{label} ||= _label($args{name});
@@ -507,9 +583,17 @@ sub input {
 	$attributes = _data_attribute($attributes, $self->{config}->{'input-data-attribute'}, \%args);
 
 	return '          <input' . $attributes . ' />' . "\n" if $args{type} eq 'hidden';
+	return '<label for="' . $args{id} . '">' . $self->{config}->{label}->(\%args) .  ':</label><input' . $attributes . ' />';
+}
+
+sub input {
+	my ($self, %args) = @_;
+
+	my $input = $self->_input(%args);
+	return $input if $args{type} eq 'hidden';
 
 	my $invalid = $args{invalid} ? $self->{config}->{invalid}->(\%args) : '';
-	return '          <div data-role="fieldcontain"><label for="' . $args{id} . '">' . $self->{config}->{label}->(\%args) .  ':</label><input' . $attributes . ' />' . $invalid . '</div>' . "\n";
+	return '          <div data-role="fieldcontain">' . $input . $invalid . '</div>' . "\n";
 }
 
 sub textarea {
@@ -653,7 +737,7 @@ sub _radio_checkbox {
 	
 	my $controlgroup = clone ($args{controlgroup});
 	$controlgroup->{fieldset} = 1;
-	$controlgroup->{content} ||= '<legend>' . $self->{config}->{label}->(\%args) .  ':</legend>' . $options . $invalid;
+	$controlgroup->{content} ||= '  <legend>' . $self->{config}->{label}->(\%args) .  ':</legend>' . $options . $invalid;
 
 	return $self->controlgroup(%{$controlgroup});
 }
@@ -815,7 +899,7 @@ The allowed HTML and data-* attributes for each UI component can be customised. 
       'navbar-item-data-attribute' => ['ajax', 'icon', 'iconpos', 'iconshadow','prefetch', 'theme'],
       'page-html-attribute' => ['id', 'class'],
       # combine data-attributes for page and dialog
-      'page-data-attribute' => ['add-back-btn', 'back-btn-text', 'back-btn-theme', 'close-btn-text', 'corners', 'dom-cache', 'enhance', 'overlay-theme', 'role', 'shadow','theme', 'title', 'tolerance', 'url'],
+      'page-data-attribute' => ['add-back-btn', 'back-btn-text', 'back-btn-theme', 'close-btn', 'close-btn-text', 'corners', 'dom-cache', 'enhance', 'overlay-theme', 'role', 'shadow','theme', 'title', 'tolerance', 'url'],
       'popup-html-attribute' => ['id', 'class'],
       'popup-data-attribute' => ['corners', 'overlay-theme', 'shadow', 'theme', 'tolerance', 'position-to', 'rel', 'role', 'transition'],
       'listview-html-attribute' => ['id', 'class'],
@@ -834,9 +918,9 @@ The allowed HTML and data-* attributes for each UI component can be customised. 
       'form-html-attribute' => ['id', 'action', 'class', 'enctype', 'method'],
       'form-data-attribute' => ['enhance', 'theme', 'ajax'],
       'input-html-attribute' => ['id', 'class', 'disabled', 'max', 'maxlength', 'min', 'name', 'pattern', 'placeholder', 'readonly', 'required', 'size', 'type', 'value', 'accept', 'capture'],
-      'input-data-attribute' => ['corners', 'highlight', 'icon', 'iconpos', 'iconshadow', 'inline', 'mini', 'shadow', 'theme', 'track-theme'],
+      'input-data-attribute' => ['clear-btn', 'clear-btn-text', 'corners', 'highlight', 'icon', 'iconpos', 'iconshadow', 'inline', 'mini', 'shadow', 'theme', 'track-theme'],
       'textarea-html-attribute' => ['id', 'name', 'class', 'rows', 'cols', 'readonly', 'disabled', 'title', 'required', 'placeholder', 'title', 'pattern'],
-      'textarea-data-attribute' => ['mini', 'theme'],
+      'textarea-data-attribute' => ['clear-btn', 'clear-btn-text', 'mini', 'theme'],
       'select-html-attribute' => ['id', 'class', 'size', 'maxlength', 'readonly', 'disabled', 'title', 'required', 'placeholder', 'title', 'pattern'],
       'select-data-attribute' => ['icon', 'iconpos', 'inline', 'mini', 'native-menu', 'overlay-theme', 'placeholder', 'theme'],
       'radio-checkbox-html-attribute' => ['id', 'class', 'readonly', 'disabled', 'title', 'required', 'placeholder', 'title', 'pattern', 'value'],
@@ -990,6 +1074,7 @@ C<form()> generates web forms. It accepts attributes defined in C<form-html-attr
       {type => 'radio', name => 'gender', options => ['Male', 'Female']},
       {type => 'checkbox', name => 'country', options => {'AU' => 'Austalia', 'US' => 'United States'}, value => 'AU'},
       {type => 'select', name => 'heard', label => 'How did you hear about us', options => ['Facebook', 'Twitter', 'Google', 'Radio', 'Other']},
+      {type => 'rangeslider', name => 'range', mini => 'true', from => {label => 'Range', name => 'from', min => 18, max => 100}, to => {name => 'to', min => 18, max => 100}},
     ],
     controlgroup => {type => 'horizontal'}, # use controlgroup to group the buttons, default to false, accepts "1" or a hashref
     buttons => [
@@ -1050,6 +1135,27 @@ C<listview()> generates listviews. It accepts attributes defined in C<listview-h
   );
 
   print $jquery_mobile->page(content => $list);
+
+=head2 C<table>
+
+C<table()> generates tables. It accepts attributes defined in C<table-html-attribute> and C<table-data-attribute>.
+
+  my $table = $jquery_mobile->table(
+    class => 'ui-responsive',
+    th => {
+      'First Name' => {priority => '1'}, 
+      'Last Name' => {priority => '2'}, 
+      'Email' => {priority => '3'}, 
+      'Gender' => {priority => '4'}, 
+    },
+    headers => ['First Name', 'Last Name', 'Email', 'Gender'],
+    rows => [
+      ['John', 'Smith', 'john@work.com', 'Male'],
+      ['Ann', 'Smith', 'ann@work.com', 'Female'],
+    ],
+  );
+
+  print $jquery_mobile->page(content => $table);
 
 =over
 
@@ -1192,6 +1298,16 @@ C<button()> generates C<anchor> and C<input> buttons.
 
 Please note that C<anchor> buttons accepts C<button-html-anchor-attribute> as data-* attributes, whereas C<input> buttons uses C<button-data-attribute>. HTML attributes for both are defined in C<button-html-attribute>.
 
+=head2 C<panel>
+
+C<panel()> generates panel containers. Content can be passed via the C<content> parameter:
+
+  my $panel = $jquery_mobile->panel(
+  	content => 'Panel Content'
+  );
+
+It accepts attributes defined in C<panel-html-attribute> and C<panel-data-attribute>.
+
 =head2 C<controlgroup>
 
 C<controlgroup()> generates controlgroup containers. Content (usually buttons) can be passed via the C<content> parameter:
@@ -1258,6 +1374,19 @@ C<textarea()> generates textareas. It accepts attributes defined in C<textarea-h
     rows => '3',
     cols => '50'
   );
+
+=head2 C<rangeslider>
+
+C<rangeslider()> generates rangesliders. It accepts attributes defined in C<rangeslider-html-attribute> and C<rangeslider-data-attribute>.
+
+  print $jquery_mobile->rangeslider(
+    type => 'rangeslider', 
+    name => 'range', 
+    mini => 'true', 
+    from => {
+      label => 'Range', name => 'from', min => 18, max => 100}, to => {name => 'to', min => 18, max => 100}
+  );
+
 
 =head1 SEE ALSO
 
