@@ -9,7 +9,7 @@ use Clone qw(clone);
 use HTML::Entities qw(encode_entities);
 
 our $VERSION = 0.02;
-# 42.4
+# 43.4
 
 sub new {
 	my ($class, %args) = (@_);
@@ -562,9 +562,10 @@ sub rangeslider {
 	my $from = '              ' . $self->_input(%{$args{from}}) . "\n";
 	my $to = '              ' . $self->_input(%{$args{to}});
 
+	$args{container_role} ||= 'fieldcontain';
 	my $invalid = $args{invalid} ? $self->{config}->{invalid}->(\%args) : '';
 
-	my $rangeslider = '          <div data-role="fieldcontain">' . "\n" . '            <div data-role="rangeslider"' . $attributes . '>' . "\n";
+	my $rangeslider = '          <div data-role="' . $args{container_role} . '">' . "\n" . '            <div data-role="rangeslider"' . $attributes . '>' . "\n";
 	$rangeslider .= $from . $to . $invalid . "\n";
 	$rangeslider .= "            </div>\n          </div>\n";
 
@@ -592,8 +593,9 @@ sub input {
 	my $input = $self->_input(%args);
 	return $input if $args{type} eq 'hidden';
 
+	$args{container_role} ||= 'fieldcontain';
 	my $invalid = $args{invalid} ? $self->{config}->{invalid}->(\%args) : '';
-	return '          <div data-role="fieldcontain">' . $input . $invalid . '</div>' . "\n";
+	return '          <div data-role="' . $args{container_role} . '">' . $input . $invalid . '</div>' . "\n";
 }
 
 sub textarea {
@@ -609,8 +611,9 @@ sub textarea {
 	my $attributes = _html_attribute('', $self->{config}->{'textarea-html-attribute'}, \%args);
 	$attributes = _data_attribute($attributes, $self->{config}->{'textarea-data-attribute'}, \%args);
 
+	$args{container_role} ||= 'fieldcontain';
 	my $invalid = $args{invalid} ? $self->{config}->{invalid}->(\%args) : '';
-	return '          <div data-role="fieldcontain"><label for="' . $args{id} . '">' . $self->{config}->{label}->(\%args) .  ':</label><textarea' . $attributes . '>' . $args{value} . '</textarea>' . $invalid . '</div>' . "\n";
+	return '          <div data-role="' . $args{container_role} . '"><label for="' . $args{id} . '">' . $self->{config}->{label}->(\%args) .  ':</label><textarea' . $attributes . '>' . $args{value} . '</textarea>' . $invalid . '</div>' . "\n";
 }
 
 sub select {
@@ -632,7 +635,7 @@ sub select {
 			$options .= '<option value="' . $key . '" ' . $selected . '>' . encode_entities($args{options}->{$key}) . '</option>';
 		}
 	}
-	else {
+	elsif (ref $args{options} eq 'ARRAY') {
 		foreach my $option (@{$args{options}}) {
 			my $selected = '';
 			$selected = 'selected="selected"' if $option eq $args{value};
@@ -640,9 +643,13 @@ sub select {
 			$options .= '<option value="' . $option . '" ' . $selected . '>' . encode_entities($option) . '</option>';
 		}
 	}
+	else {
+		$options = $args{options};
+	}
 
+	$args{container_role} ||= 'fieldcontain';
 	my $invalid = $args{invalid} ? $self->{config}->{invalid}->(\%args) : '';
-	return '          <div data-role="fieldcontain"><label for="' . $args{id} . '">' . $self->{config}->{label}->(\%args) .  ':</label><select name="' . $args{name} . '"' . $attributes . '>' . $options . '</select>' . $invalid . '</div>' . "\n";
+	return '          <div data-role="' . $args{container_role} . '"><label for="' . $args{id} . '">' . $self->{config}->{label}->(\%args) .  ':</label><select name="' . $args{name} . '"' . $attributes . '>' . $options . '</select>' . $invalid . '</div>' . "\n";
 }
 
 sub radio {
