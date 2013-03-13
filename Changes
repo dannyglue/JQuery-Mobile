@@ -1,7 +1,7 @@
 Revision history for JQuery-Mobile
 
 0.02    18/01/2013
-        Added panel, table, and rangeslider widgets. Support jQuery Mobile 1.3.0 beta.
+        Added panel, table, and rangeslider widgets. Support jQuery Mobile 1.3.0.
         Add fieldset controlgroup configuration support to radio and checkbox.
         Fixed typo in POD.
 0.01    18/10/2012

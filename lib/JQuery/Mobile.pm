@@ -9,7 +9,7 @@ use Clone qw(clone);
 use HTML::Entities qw(encode_entities);
 
 our $VERSION = 0.02;
-# 43.4
+# 46.4
 
 sub new {
 	my ($class, %args) = (@_);
@@ -24,15 +24,15 @@ sub new {
 		'apple-touch-icon-72' => '', # path to apple web app icon image (72x72 pixels)
 		'apple-touch-icon-114' => '', # path to apple web app icon image (114x114 pixels)
 		'apple-touch-startup-image' => '', # path to apple web app startup image
-		'jquery-mobile-css' => 'http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.css',
-		'jquery-mobile-js' => 'http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.js',
+		'jquery-mobile-css' => 'http://code.jquery.com/mobile/1.3.0/jquery.mobile-1.3.0.min.css',
+		'jquery-mobile-js' => 'http://code.jquery.com/mobile/1.3.0/jquery.mobile-1.3.0.min.js',
 		'jquery' => 'http://code.jquery.com/jquery-1.8.2.min.js',
 		'app-css' => [], # global application CSS files
 		'app-js' => [], # global application JS files
 		'app-inline-css' => '      span.invalid{color:#F00000;line-height: 1.5;}', # inline CSS code
 		'app-inline-js' => '', # inline JS code
 		'app-title' => '', # <title> in <head>
-		# a list of default allowed HTML and data-* attributes for UI components (Reference: http://jquerymobile.com/test/docs/api/data-attributes.html)
+		# a list of default allowed HTML and data-* attributes for UI components (Reference: http://api.jquerymobile.com/data-attribute/)
 		'header-footer-html-attribute' => ['id', 'class'],
 		'header-footer-data-attribute' => ['id', 'fullscreen', 'position', 'theme'],
 		'navbar-html-attribute' => ['id', 'class'],
@@ -70,7 +70,7 @@ sub new {
 		'textarea-html-attribute' => ['id', 'name', 'class', 'rows', 'cols', 'readonly', 'disabled', 'title', 'required', 'placeholder', 'title', 'pattern'],
 		'textarea-data-attribute' => ['clear-btn', 'clear-btn-text', 'mini', 'theme'],
 		'select-html-attribute' => ['id', 'class', 'size', 'maxlength', 'readonly', 'disabled', 'title', 'required', 'placeholder', 'title', 'pattern'],
-		'select-data-attribute' => ['icon', 'iconpos', 'inline', 'mini', 'native-menu', 'overlay-theme', 'placeholder', 'theme'],
+		'select-data-attribute' => ['icon', 'iconpos', 'inline', 'mini', 'native-menu', 'overlay-theme', 'placeholder', 'theme', 'role'],
 		'radio-checkbox-html-attribute' => ['id', 'class', 'readonly', 'disabled', 'title', 'required', 'placeholder', 'title', 'pattern', 'value'],
 		'radio-checkbox-data-attribute' => ['mini', 'theme'],
 		'rangeslider-html-attribute' => ['id', 'name', 'class'],
@@ -882,8 +882,8 @@ Here is a list of optional parameters when instantiating a JQuery::Mobile object
       'apple-touch-icon-72' => '', # path to apple web app icon image (72x72 pixels)
       'apple-touch-icon-114' => '', # path to apple web app icon image (114x114 pixels)
       'apple-touch-startup-image' => '', # path to apple web app startup image
-      'jquery-mobile-css' => 'http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.css',
-      'jquery-mobile-js' => 'http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.js',
+      'jquery-mobile-css' => 'http://code.jquery.com/mobile/1.3.0/jquery.mobile-1.3.0.min.css',
+      'jquery-mobile-js' => 'http://code.jquery.com/mobile/1.3.0/jquery.mobile-1.3.0.min.js',
       'jquery' => 'http://code.jquery.com/jquery-1.8.2.min.js',
       'app-css' => [], # global application CSS files
       'app-js' => [], # global application JS files
@@ -893,7 +893,7 @@ Here is a list of optional parameters when instantiating a JQuery::Mobile object
      }
   );
 
-The allowed HTML and data-* attributes for each UI component can be customised. By default, HTML attributes are very strict to ensure a clean markup. For data-* attributes, see reference: http://jquerymobile.com/test/docs/api/data-attributes.html.
+The allowed HTML and data-* attributes for each UI component can be customised. By default, HTML attributes are very strict to ensure a clean markup. For data-* attributes, see reference: http://api.jquerymobile.com/data-attribute/.
 
   # default values are shown
   my $jquery_mobile = JQuery::Mobile->new(
