@@ -9,7 +9,7 @@ use Clone qw(clone);
 use HTML::Entities qw(encode_entities);
 
 our $VERSION = 0.02;
-# 46.4
+# 48.4
 
 sub new {
 	my ($class, %args) = (@_);
@@ -24,9 +24,9 @@ sub new {
 		'apple-touch-icon-72' => '', # path to apple web app icon image (72x72 pixels)
 		'apple-touch-icon-114' => '', # path to apple web app icon image (114x114 pixels)
 		'apple-touch-startup-image' => '', # path to apple web app startup image
-		'jquery-mobile-css' => 'http://code.jquery.com/mobile/1.3.0/jquery.mobile-1.3.0.min.css',
-		'jquery-mobile-js' => 'http://code.jquery.com/mobile/1.3.0/jquery.mobile-1.3.0.min.js',
-		'jquery' => 'http://code.jquery.com/jquery-1.8.2.min.js',
+		'jquery-mobile-css' => 'http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.css',
+		'jquery-mobile-js' => 'http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.js',
+		'jquery' => 'http://code.jquery.com/jquery-1.9.1.min.js',
 		'app-css' => [], # global application CSS files
 		'app-js' => [], # global application JS files
 		'app-inline-css' => '      span.invalid{color:#F00000;line-height: 1.5;}', # inline CSS code
@@ -70,7 +70,7 @@ sub new {
 		'textarea-html-attribute' => ['id', 'name', 'class', 'rows', 'cols', 'readonly', 'disabled', 'title', 'required', 'placeholder', 'title', 'pattern'],
 		'textarea-data-attribute' => ['clear-btn', 'clear-btn-text', 'mini', 'theme'],
 		'select-html-attribute' => ['id', 'class', 'size', 'maxlength', 'readonly', 'disabled', 'title', 'required', 'placeholder', 'title', 'pattern'],
-		'select-data-attribute' => ['icon', 'iconpos', 'inline', 'mini', 'native-menu', 'overlay-theme', 'placeholder', 'theme', 'role'],
+		'select-data-attribute' => ['icon', 'iconpos', 'inline', 'mini', 'native-menu', 'overlay-theme', 'theme', 'role'],
 		'radio-checkbox-html-attribute' => ['id', 'class', 'readonly', 'disabled', 'title', 'required', 'placeholder', 'title', 'pattern', 'value'],
 		'radio-checkbox-data-attribute' => ['mini', 'theme'],
 		'rangeslider-html-attribute' => ['id', 'name', 'class'],
@@ -626,6 +626,7 @@ sub select {
 	$attributes = _data_attribute($attributes, $self->{config}->{'select-data-attribute'}, \%args);
 
 	my $options = '';
+	my $placeholder_text = $args{placeholder_text};
 
 	if (ref $args{options} eq 'HASH') {
 		foreach my $key (keys %{$args{options}}) {
@@ -634,6 +635,10 @@ sub select {
 
 			$options .= '<option value="' . $key . '" ' . $selected . '>' . encode_entities($args{options}->{$key}) . '</option>';
 		}
+
+		if (defined $placeholder_text) {
+			$options = '<option value="">' . encode_entities($placeholder_text) . '</option>' . $options;
+		}
 	}
 	elsif (ref $args{options} eq 'ARRAY') {
 		foreach my $option (@{$args{options}}) {
@@ -641,6 +646,10 @@ sub select {
 			$selected = 'selected="selected"' if $option eq $args{value};
 
 			$options .= '<option value="' . $option . '" ' . $selected . '>' . encode_entities($option) . '</option>';
+		}
+
+		if (defined $placeholder_text) {
+			$options = '<option value="">' . encode_entities($placeholder_text) . '</option>' . $options;
 		}
 	}
 	else {
@@ -882,9 +891,9 @@ Here is a list of optional parameters when instantiating a JQuery::Mobile object
       'apple-touch-icon-72' => '', # path to apple web app icon image (72x72 pixels)
       'apple-touch-icon-114' => '', # path to apple web app icon image (114x114 pixels)
       'apple-touch-startup-image' => '', # path to apple web app startup image
-      'jquery-mobile-css' => 'http://code.jquery.com/mobile/1.3.0/jquery.mobile-1.3.0.min.css',
-      'jquery-mobile-js' => 'http://code.jquery.com/mobile/1.3.0/jquery.mobile-1.3.0.min.js',
-      'jquery' => 'http://code.jquery.com/jquery-1.8.2.min.js',
+      'jquery-mobile-css' => 'http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.css',
+      'jquery-mobile-js' => 'http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.js',
+      'jquery' => 'http://code.jquery.com/jquery-1.9.1.min.js',
       'app-css' => [], # global application CSS files
       'app-js' => [], # global application JS files
       'app-inline-css' => '      span.invalid{color:#F00000;line-height: 1.5;}', # inline CSS code

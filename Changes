@@ -1,8 +1,10 @@
 Revision history for JQuery-Mobile
 
-0.02    18/01/2013
-        Added panel, table, and rangeslider widgets. Support jQuery Mobile 1.3.0.
+0.02    17/06/2013
+        Added panel, table, and rangeslider widgets. Support jQuery Mobile 1.3.1. Upgrade jQuery to 1.9.1.
         Add fieldset controlgroup configuration support to radio and checkbox.
+        Removed 'placeholder' from the default data-* attribute list of a select box.
+        Added 'placeholder_text' param to select boxes for nominating placeholder values.
         Fixed typo in POD.
 0.01    18/10/2012
         First version, released on an unsuspecting world.
