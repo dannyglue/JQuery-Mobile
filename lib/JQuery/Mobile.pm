@@ -9,7 +9,7 @@ use Clone qw(clone);
 use HTML::Entities qw(encode_entities);
 
 our $VERSION = 0.02;
-# 48.4
+# 52.4
 
 sub new {
 	my ($class, %args) = (@_);
@@ -69,7 +69,7 @@ sub new {
 		'input-data-attribute' => ['clear-btn', 'clear-btn-text', 'corners', 'highlight', 'icon', 'iconpos', 'iconshadow', 'inline', 'mini', 'shadow', 'theme', 'track-theme'],
 		'textarea-html-attribute' => ['id', 'name', 'class', 'rows', 'cols', 'readonly', 'disabled', 'title', 'required', 'placeholder', 'title', 'pattern'],
 		'textarea-data-attribute' => ['clear-btn', 'clear-btn-text', 'mini', 'theme'],
-		'select-html-attribute' => ['id', 'class', 'size', 'maxlength', 'readonly', 'disabled', 'title', 'required', 'placeholder', 'title', 'pattern'],
+		'select-html-attribute' => ['id', 'class', 'size', 'maxlength', 'readonly', 'disabled', 'title', 'required', 'placeholder', 'title', 'pattern', 'multiple'],
 		'select-data-attribute' => ['icon', 'iconpos', 'inline', 'mini', 'native-menu', 'overlay-theme', 'theme', 'role'],
 		'radio-checkbox-html-attribute' => ['id', 'class', 'readonly', 'disabled', 'title', 'required', 'placeholder', 'title', 'pattern', 'value'],
 		'radio-checkbox-data-attribute' => ['mini', 'theme'],
@@ -622,6 +622,10 @@ sub select {
 	$args{id} ||= $args{name};
 	$args{label} ||= _label($args{name});
 
+	if ($args{multiple}) {
+		$args{'native-menu'} ||= 'false';
+	}
+
 	my $attributes = _html_attribute('', $self->{config}->{'select-html-attribute'}, \%args);
 	$attributes = _data_attribute($attributes, $self->{config}->{'select-data-attribute'}, \%args);
 
@@ -629,9 +633,38 @@ sub select {
 	my $placeholder_text = $args{placeholder_text};
 
 	if (ref $args{options} eq 'HASH') {
-		foreach my $key (keys %{$args{options}}) {
+
+		my @keys;
+		my $sort_options = $args{sort_options}; 
+		if ($sort_options) {
+			if ($sort_options eq 'key') {
+				@keys = sort keys %{$args{options}};
+			}
+			else {
+				@keys = sort {$args{options}->{$a} cmp $args{options}->{$b}} keys %{$args{options}};
+			}
+		}
+		else {
+			@keys = keys %{$args{options}};
+		}
+
+		foreach my $key (@keys) {
 			my $selected = '';
-			$selected = 'selected="selected"' if $key eq $args{value};
+
+			if (defined $args{value}) {
+
+				if (ref $args{value} eq 'HASH') {
+					foreach my $value_key (keys %{$args{value}}) {
+						if ($key eq $value_key) {
+							$selected = 'selected="selected"';
+							last;
+						}
+					}
+				}
+				elsif ($key eq $args{value}) {
+					$selected = 'selected="selected"';
+				}
+			}
 
 			$options .= '<option value="' . $key . '" ' . $selected . '>' . encode_entities($args{options}->{$key}) . '</option>';
 		}
@@ -643,7 +676,21 @@ sub select {
 	elsif (ref $args{options} eq 'ARRAY') {
 		foreach my $option (@{$args{options}}) {
 			my $selected = '';
-			$selected = 'selected="selected"' if $option eq $args{value};
+
+			if (defined $args{value}) {
+
+				if (ref $args{value} eq 'ARRAY') {
+					foreach my $element (@{$args{value}}) {
+						if ($option eq $element) {
+							$selected = 'selected="selected"';
+							last;
+						}
+					}
+				}
+				elsif ($option eq $args{value}) {
+					$selected = 'selected="selected"';
+				}
+			}
 
 			$options .= '<option value="' . $option . '" ' . $selected . '>' . encode_entities($option) . '</option>';
 		}
@@ -686,8 +733,23 @@ sub _radio_checkbox {
 	my $options = '';
 
 	if (ref $args{options} eq 'HASH') {
-		foreach my $key (keys %{$args{options}}) {
-			$cloned_args->{id} = $args{name} . '-' . _urlise($key);
+
+		my @keys;
+		my $sort_options = $args{sort_options}; 
+		if ($sort_options) {
+			if ($sort_options eq 'key') {
+				@keys = sort keys %{$args{options}};
+			}
+			else {
+				@keys = sort {$args{options}->{$a} cmp $args{options}->{$b}} keys %{$args{options}};
+			}
+		}
+		else {
+			@keys = keys %{$args{options}};
+		}
+
+		foreach my $key (@keys) {
+			$cloned_args->{id} = $args{name} . '-' . _id($key);
 			$cloned_args->{value} = $key;
 			my $html_attributes = _html_attribute('', $self->{config}->{'radio-checkbox-html-attribute'}, $cloned_args);
 
@@ -713,7 +775,7 @@ sub _radio_checkbox {
 	}
 	elsif (ref $args{options} eq 'ARRAY') {
 		foreach my $key (@{$args{options}}) {
-			$cloned_args->{id} = $args{name} . '-' . _urlise($key);
+			$cloned_args->{id} = $args{name} . '-' . _id($key);
 			$cloned_args->{value} = $key;
 			my $html_attributes = _html_attribute('', $self->{config}->{'radio-checkbox-html-attribute'}, $cloned_args);
 
@@ -738,15 +800,7 @@ sub _radio_checkbox {
 		}
 	}
 	else {
-		foreach my $option (@{$args{options}}) {
-			$cloned_args->{id} = $args{name} . '-' . _urlise($option);
-			$cloned_args->{value} = $option;
-			my $html_attributes = _html_attribute('', $self->{config}->{'radio-checkbox-html-attribute'}, $cloned_args);
-
-			my $checked = '';
-			$checked = ' checked="checked"' if $option eq $args{value};
-			$options .= '<input type="' . $args{type} . '" name="' . $args{name} . '"' . $html_attributes . $data_attributes . $checked . ' /><label for="' . $cloned_args->{id} . '">' . $option . '</label>';
-		}
+		$options = $args{options};
 	}
 
 	my $invalid = $args{invalid} ? $self->{config}->{invalid}->(\%args) : '';
@@ -818,10 +872,11 @@ sub _label {
 	return $string;
 }
 
-sub _urlise {
+sub _id {
 	my $text = shift;
 	$text =~ s/&/and/g;
-	$text =~ s/[^0-9A-Za-z]//g;
+	$text =~ s/\//-/g;
+	$text =~ s/[^0-9A-Za-z\-_.:]//g;
 	return lc($text);
 }
 
