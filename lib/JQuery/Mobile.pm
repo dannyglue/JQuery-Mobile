@@ -9,7 +9,7 @@ use Clone qw(clone);
 use HTML::Entities qw(encode_entities);
 
 our $VERSION = 0.02;
-# 52.4
+# 53.4
 
 sub new {
 	my ($class, %args) = (@_);
@@ -24,8 +24,8 @@ sub new {
 		'apple-touch-icon-72' => '', # path to apple web app icon image (72x72 pixels)
 		'apple-touch-icon-114' => '', # path to apple web app icon image (114x114 pixels)
 		'apple-touch-startup-image' => '', # path to apple web app startup image
-		'jquery-mobile-css' => 'http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.css',
-		'jquery-mobile-js' => 'http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.js',
+		'jquery-mobile-css' => 'http://code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.min.css',
+		'jquery-mobile-js' => 'http://code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.min.js',
 		'jquery' => 'http://code.jquery.com/jquery-1.9.1.min.js',
 		'app-css' => [], # global application CSS files
 		'app-js' => [], # global application JS files
@@ -946,8 +946,8 @@ Here is a list of optional parameters when instantiating a JQuery::Mobile object
       'apple-touch-icon-72' => '', # path to apple web app icon image (72x72 pixels)
       'apple-touch-icon-114' => '', # path to apple web app icon image (114x114 pixels)
       'apple-touch-startup-image' => '', # path to apple web app startup image
-      'jquery-mobile-css' => 'http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.css',
-      'jquery-mobile-js' => 'http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.js',
+      'jquery-mobile-css' => 'http://code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.min.css',
+      'jquery-mobile-js' => 'http://code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.min.js',
       'jquery' => 'http://code.jquery.com/jquery-1.9.1.min.js',
       'app-css' => [], # global application CSS files
       'app-js' => [], # global application JS files
@@ -1469,7 +1469,7 @@ Xufeng (Danny) Liang (danny.glue@gmail.com)
 
 =head1 COPYRIGHT & LICENSE
 
-Copyright 2012 Xufeng (Danny) Liang, All Rights Reserved.
+Copyright 2013 Xufeng (Danny) Liang, All Rights Reserved.
 
 This program is free software; you can redistribute it and/or modify it under the same terms as Perl itself.
 
