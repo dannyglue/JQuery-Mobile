@@ -636,16 +636,11 @@ sub select {
 
 		my @keys;
 		my $sort_options = $args{sort_options}; 
-		if ($sort_options) {
-			if ($sort_options eq 'key') {
-				@keys = sort keys %{$args{options}};
-			}
-			else {
-				@keys = sort {$args{options}->{$a} cmp $args{options}->{$b}} keys %{$args{options}};
-			}
+		if ($sort_options && $sort_options eq 'key') {
+			@keys = sort keys %{$args{options}};
 		}
 		else {
-			@keys = keys %{$args{options}};
+			@keys = sort {$args{options}->{$a} cmp $args{options}->{$b}} keys %{$args{options}};
 		}
 
 		foreach my $key (@keys) {
@@ -736,16 +731,11 @@ sub _radio_checkbox {
 
 		my @keys;
 		my $sort_options = $args{sort_options}; 
-		if ($sort_options) {
-			if ($sort_options eq 'key') {
-				@keys = sort keys %{$args{options}};
-			}
-			else {
-				@keys = sort {$args{options}->{$a} cmp $args{options}->{$b}} keys %{$args{options}};
-			}
+		if ($sort_options && $sort_options eq 'key') {
+			@keys = sort keys %{$args{options}};
 		}
 		else {
-			@keys = keys %{$args{options}};
+			@keys = sort {$args{options}->{$a} cmp $args{options}->{$b}} keys %{$args{options}};
 		}
 
 		foreach my $key (@keys) {
