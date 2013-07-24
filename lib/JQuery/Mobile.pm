@@ -8,8 +8,8 @@ our @EXPORT_OK = qw(new head header footer table panel popup page pages form lis
 use Clone qw(clone);
 use HTML::Entities qw(encode_entities);
 
-our $VERSION = 0.02;
-# 53.4
+our $VERSION = 0.03;
+# 54.4
 
 sub new {
 	my ($class, %args) = (@_);
