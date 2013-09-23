@@ -16,6 +16,7 @@ WriteMakefile(
         'Test::More' => 0,
         'Clone' => 0,
         'HTML::Entities' => 0,
+        'Encode' => 0,
         'Exporter' => '5.57'
     },
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },

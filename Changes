@@ -1,5 +1,9 @@
 Revision history for JQuery-Mobile
 
+0.04    05/09/2013
+        DEPRECATED obsolete apple-touch-icon* and apple-touch-startup-image configurations in new().
+        Better handle UTF-8.
+        Fixed potential issue with duplicated checkbox/radio input field IDs.
 0.03    24/07/2013
         Sort hash options by values for checkboxes, radios, and selectboxes by default.
 0.02    16/07/2013

@@ -7,9 +7,11 @@ our @EXPORT_OK = qw(new head header footer table panel popup page pages form lis
 
 use Clone qw(clone);
 use HTML::Entities qw(encode_entities);
+use Encode qw(decode);
+use utf8;
 
-our $VERSION = 0.03;
-# 54.4
+our $VERSION = 0.04;
+# 56.4
 
 sub new {
 	my ($class, %args) = (@_);
@@ -20,10 +22,6 @@ sub new {
 		'head' => 1, # include <html>, <head>, and <body> tag when rendering a page
 		'viewport' => 'width=device-width, initial-scale=1', # default viewport
 		'apple-mobile-web-app-capable' => 1,  # enable as apple web app
-		'apple-touch-icon' => '', # path to apple web app icon image
-		'apple-touch-icon-72' => '', # path to apple web app icon image (72x72 pixels)
-		'apple-touch-icon-114' => '', # path to apple web app icon image (114x114 pixels)
-		'apple-touch-startup-image' => '', # path to apple web app startup image
 		'jquery-mobile-css' => 'http://code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.min.css',
 		'jquery-mobile-js' => 'http://code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.min.js',
 		'jquery' => 'http://code.jquery.com/jquery-1.9.1.min.js',
@@ -110,13 +108,8 @@ sub head {
 
 	my $head = '  <head>' . "\n" . '    <title>' . $self->{config}->{'app-title'} . '</title>' . "\n" . 
 	'    <meta name="viewport" content="' . $self->{config}->{'viewport'} . '" />' . "\n";
-	# apple icons, startup image
 	$head .= '    <meta name="apple-mobile-web-app-capable" content="yes" />' . "\n" if $self->{config}->{'apple-mobile-web-app-capable'};
-	$head .= '    <link rel="apple-touch-icon" href="' . $self->{config}->{'apple-touch-icon'} . '" />' . "\n" if $self->{config}->{'apple-touch-icon'};
-	$head .= '    <link rel="apple-touch-icon" sizes="72x72" href="' . $self->{config}->{'apple-touch-icon-72'} . '" />' . "\n" if $self->{config}->{'apple-touch-icon-72'};
-	$head .= '    <link rel="apple-touch-icon" sizes="114x114" href="' . $self->{config}->{'apple-touch-icon-114'} . '" />' . "\n" if $self->{config}->{'apple-touch-icon-114'};
-	$head .= '    <link rel="apple-touch-startup-image" href="' . $self->{config}->{'apple-touch-startup-image'} . '" />' . "\n" if $self->{config}->{'apple-touch-startup-image'};
-
+	
 	my $css_sources = [$self->{config}->{'jquery-mobile-css'}];
 	push @{$css_sources}, @{$self->{config}->{'app-css'}}, if @{$self->{config}->{'app-css'}};
 
@@ -578,7 +571,7 @@ sub _input {
 	$args{id} ||= $args{name};
 	$args{label} ||= _label($args{name});
 
-	$args{value} = encode_entities($args{value});
+	$args{value} = _encode_entities($args{value});
 
 	my $attributes = _html_attribute('', $self->{config}->{'input-html-attribute'}, \%args);
 	$attributes = _data_attribute($attributes, $self->{config}->{'input-data-attribute'}, \%args);
@@ -606,7 +599,7 @@ sub textarea {
 
 	$args{cols} ||= 40;
 	$args{rows} ||= 8;
-	$args{value} = encode_entities($args{value});
+	$args{value} = _encode_entities($args{value});
 
 	my $attributes = _html_attribute('', $self->{config}->{'textarea-html-attribute'}, \%args);
 	$attributes = _data_attribute($attributes, $self->{config}->{'textarea-data-attribute'}, \%args);
@@ -648,24 +641,24 @@ sub select {
 
 			if (defined $args{value}) {
 
-				if (ref $args{value} eq 'HASH') {
-					foreach my $value_key (keys %{$args{value}}) {
-						if ($key eq $value_key) {
+				if (ref $args{value} eq 'ARRAY') {
+					LASTELEMENT: foreach my $element (@{$args{value}}) {
+						if (_decode_utf8($key) eq $element) {
 							$selected = 'selected="selected"';
-							last;
+							last LASTELEMENT;
 						}
 					}
 				}
-				elsif ($key eq $args{value}) {
+				elsif (_decode_utf8($key) eq $args{value}) {
 					$selected = 'selected="selected"';
 				}
 			}
 
-			$options .= '<option value="' . $key . '" ' . $selected . '>' . encode_entities($args{options}->{$key}) . '</option>';
+			$options .= '<option value="' . _encode_entities($key) . '" ' . $selected . '>' . _encode_entities($args{options}->{$key}) . '</option>';
 		}
 
 		if (defined $placeholder_text) {
-			$options = '<option value="">' . encode_entities($placeholder_text) . '</option>' . $options;
+			$options = '<option value="">' . _encode_entities($placeholder_text) . '</option>' . $options;
 		}
 	}
 	elsif (ref $args{options} eq 'ARRAY') {
@@ -675,23 +668,23 @@ sub select {
 			if (defined $args{value}) {
 
 				if (ref $args{value} eq 'ARRAY') {
-					foreach my $element (@{$args{value}}) {
-						if ($option eq $element) {
+					LASTELEMENT: foreach my $element (@{$args{value}}) {
+						if (_decode_utf8($option) eq $element) {
 							$selected = 'selected="selected"';
-							last;
+							last LASTELEMENT;
 						}
 					}
 				}
-				elsif ($option eq $args{value}) {
+				elsif (_decode_utf8($option) eq $args{value}) {
 					$selected = 'selected="selected"';
 				}
 			}
 
-			$options .= '<option value="' . $option . '" ' . $selected . '>' . encode_entities($option) . '</option>';
+			$options .= '<option value="' . _encode_entities($option) . '" ' . $selected . '>' . _encode_entities($option) . '</option>';
 		}
 
 		if (defined $placeholder_text) {
-			$options = '<option value="">' . encode_entities($placeholder_text) . '</option>' . $options;
+			$options = '<option value="">' . _encode_entities($placeholder_text) . '</option>' . $options;
 		}
 	}
 	else {
@@ -738,35 +731,11 @@ sub _radio_checkbox {
 			@keys = sort {$args{options}->{$a} cmp $args{options}->{$b}} keys %{$args{options}};
 		}
 
+		my $key_count = 1;
 		foreach my $key (@keys) {
-			$cloned_args->{id} = $args{name} . '-' . _id($key);
-			$cloned_args->{value} = $key;
-			my $html_attributes = _html_attribute('', $self->{config}->{'radio-checkbox-html-attribute'}, $cloned_args);
-
-			my $checked = '';
-
-			if (defined $args{value}) {
-
-				if (ref $args{value} eq 'HASH') {
-					foreach my $value_key (keys %{$args{value}}) {
-						if ($key eq $value_key) {
-							$checked = ' checked="checked"';
-							last;
-						}
-					}
-				}
-				elsif ($key eq $args{value}) {
-					$checked = ' checked="checked"';
-				}
-			}
-
-			$options .= '<input type="' . $args{type} . '" name="' . $args{name} . '"' . $html_attributes . $data_attributes . $checked . ' /><label for="' . $cloned_args->{id} . '">' . $args{options}->{$key} . '</label>';
-		}
-	}
-	elsif (ref $args{options} eq 'ARRAY') {
-		foreach my $key (@{$args{options}}) {
-			$cloned_args->{id} = $args{name} . '-' . _id($key);
-			$cloned_args->{value} = $key;
+			$cloned_args->{id} = $args{name} . '-' . _id($key) . '-' . $key_count;
+			$key_count++;
+			$cloned_args->{value} = _decode_utf8($key);
 			my $html_attributes = _html_attribute('', $self->{config}->{'radio-checkbox-html-attribute'}, $cloned_args);
 
 			my $checked = '';
@@ -774,19 +743,47 @@ sub _radio_checkbox {
 			if (defined $args{value}) {
 
 				if (ref $args{value} eq 'ARRAY') {
-					foreach my $element (@{$args{value}}) {
-						if ($key eq $element) {
+					LASTELEMENT: foreach my $element (@{$args{value}}) {
+						if (_decode_utf8($key) eq $element) {
 							$checked = ' checked="checked"';
-							last;
+							last LASTELEMENT;
 						}
 					}
 				}
-				elsif ($key eq $args{value}) {
+				elsif (_decode_utf8($key) eq $args{value}) {
 					$checked = ' checked="checked"';
 				}
 			}
 
-			$options .= '<input type="' . $args{type} . '" name="' . $args{name} . '"' . $html_attributes . $data_attributes . $checked . ' /><label for="' . $cloned_args->{id} . '">' . $key . '</label>';
+			$options .= '<input type="' . $args{type} . '" name="' . $args{name} . '"' . $html_attributes . $data_attributes . $checked . ' /><label for="' . $cloned_args->{id} . '">' . _encode_entities($args{options}->{$key}) . '</label>';
+		}
+	}
+	elsif (ref $args{options} eq 'ARRAY') {
+		my $key_count = 1;
+		foreach my $key (@{$args{options}}) {
+			$cloned_args->{id} = $args{name} . '-' . _id($key) . '-' . $key_count;
+			$key_count++;
+			$cloned_args->{value} = _decode_utf8($key);
+			my $html_attributes = _html_attribute('', $self->{config}->{'radio-checkbox-html-attribute'}, $cloned_args);
+
+			my $checked = '';
+
+			if (defined $args{value}) {
+
+				if (ref $args{value} eq 'ARRAY') {
+					LASTELEMENT: foreach my $element (@{$args{value}}) {
+						if (_decode_utf8($key) eq $element) {
+							$checked = ' checked="checked"';
+							last LASTELEMENT;
+						}
+					}
+				}
+				elsif (_decode_utf8($key) eq $args{value}) {
+					$checked = ' checked="checked"';
+				}
+			}
+
+			$options .= '<input type="' . $args{type} . '" name="' . $args{name} . '"' . $html_attributes . $data_attributes . $checked . ' /><label for="' . $cloned_args->{id} . '">' . _encode_entities($key) . '</label>';
 		}
 	}
 	else {
@@ -870,6 +867,20 @@ sub _id {
 	return lc($text);
 }
 
+sub _encode_entities {
+	my $value = shift;
+	return HTML::Entities::encode_entities(_decode_utf8($value));
+}
+
+sub _decode_utf8 {
+	my $value = shift;
+	eval {Encode::decode('UTF-8', $value)};
+	if ($@) {
+		return $value;
+	}
+	return Encode::decode('UTF-8', $value);
+}
+
 1;
 
 __END__
@@ -932,10 +943,6 @@ Here is a list of optional parameters when instantiating a JQuery::Mobile object
       'head' => 1, # include <html>, <head>, and <body> tag when rendering a page
       'viewport' => 'width=device-width, initial-scale=1', # default viewport
       'apple-mobile-web-app-capable' => 1, # enable as apple web app
-      'apple-touch-icon' => '', # path to apple web app icon image
-      'apple-touch-icon-72' => '', # path to apple web app icon image (72x72 pixels)
-      'apple-touch-icon-114' => '', # path to apple web app icon image (114x114 pixels)
-      'apple-touch-startup-image' => '', # path to apple web app startup image
       'jquery-mobile-css' => 'http://code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.min.css',
       'jquery-mobile-js' => 'http://code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.min.js',
       'jquery' => 'http://code.jquery.com/jquery-1.9.1.min.js',
