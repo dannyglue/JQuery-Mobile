@@ -11,7 +11,7 @@ use Encode qw(decode);
 use utf8;
 
 our $VERSION = 0.04;
-# 56.4
+# 58.4
 
 sub new {
 	my ($class, %args) = (@_);
@@ -57,7 +57,7 @@ sub new {
 		'collapsible-set-html-attribute' => ['id', 'class'],
 		'collapsible-set-data-attribute' => ['collapsed-icon', 'content-theme', 'expanded-icon', 'iconpos', 'inset', 'mini', 'theme'],
 		'controlgroup-html-attribute' => ['id', 'class'],
-		'controlgroup-data-attribute' => ['enhance', 'iconpos', 'mini', 'theme', 'type'],
+		'controlgroup-data-attribute' => ['enhance', 'iconpos', 'mini', 'theme', 'type', 'input', 'filter'],
 		'button-html-attribute' => ['id', 'name', 'class', 'maxlength', 'size', 'type', 'value'],
 		'button-html-anchor-attribute' => ['id', 'class', 'href', 'target'],
 		'button-data-attribute' => ['ajax', 'corners', 'dialog', 'direction', 'dom-cache', 'external', 'icon', 'iconpos', 'iconshadow', 'inline', 'mini', 'position-to', 'prefetch', 'rel', 'role', 'shadow', 'theme', 'transition'],
@@ -742,7 +742,15 @@ sub _radio_checkbox {
 
 			if (defined $args{value}) {
 
-				if (ref $args{value} eq 'ARRAY') {
+				if (ref $args{value} eq 'HASH') {
+					foreach my $value_key (keys %{$args{value}}) {
+						if (_decode_utf8($key) eq $value_key) {
+							$checked = ' checked="checked"';
+							last;
+						}
+					}
+				}
+				elsif (ref $args{value} eq 'ARRAY') {
 					LASTELEMENT: foreach my $element (@{$args{value}}) {
 						if (_decode_utf8($key) eq $element) {
 							$checked = ' checked="checked"';
@@ -770,7 +778,15 @@ sub _radio_checkbox {
 
 			if (defined $args{value}) {
 
-				if (ref $args{value} eq 'ARRAY') {
+				if (ref $args{value} eq 'HASH') {
+					foreach my $value_key (keys %{$args{value}}) {
+						if (_decode_utf8($key) eq $value_key) {
+							$checked = ' checked="checked"';
+							last;
+						}
+					}
+				}
+				elsif (ref $args{value} eq 'ARRAY') {
 					LASTELEMENT: foreach my $element (@{$args{value}}) {
 						if (_decode_utf8($key) eq $element) {
 							$checked = ' checked="checked"';
@@ -796,7 +812,10 @@ sub _radio_checkbox {
 	$controlgroup->{fieldset} = 1;
 	$controlgroup->{content} ||= '  <legend>' . $self->{config}->{label}->(\%args) .  ':</legend>' . $options . $invalid;
 
-	return $self->controlgroup(%{$controlgroup});
+	my $controlgroup_content = $self->controlgroup(%{$controlgroup});
+
+	$args{container_role} ||= 'fieldcontain';
+	return '          <div data-role="' . $args{container_role} . '">' . $controlgroup_content . '</div>' . "\n";
 }
 
 sub _header_footer_attribute {
