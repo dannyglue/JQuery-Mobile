@@ -11,7 +11,7 @@ use Encode qw(decode);
 use utf8;
 
 our $VERSION = 0.04;
-# 58.4
+# 59.4
 
 sub new {
 	my ($class, %args) = (@_);
@@ -629,8 +629,16 @@ sub select {
 
 		my @keys;
 		my $sort_options = $args{sort_options}; 
-		if ($sort_options && $sort_options eq 'key') {
-			@keys = sort keys %{$args{options}};
+		if ($sort_options) {
+			if (ref $sort_options eq 'ARRAY') {
+				@keys = @{$sort_options};
+			}
+			elsif ($sort_options eq 'key') {
+				@keys = sort keys %{$args{options}};
+			}
+			else {
+				@keys = sort {$args{options}->{$a} cmp $args{options}->{$b}} keys %{$args{options}};	
+			}
 		}
 		else {
 			@keys = sort {$args{options}->{$a} cmp $args{options}->{$b}} keys %{$args{options}};
@@ -641,7 +649,15 @@ sub select {
 
 			if (defined $args{value}) {
 
-				if (ref $args{value} eq 'ARRAY') {
+				if (ref $args{value} eq 'HASH') {
+					foreach my $value_key (keys %{$args{value}}) {
+						if (_decode_utf8($key) eq $value_key) {
+							$selected = 'selected="selected"';
+							last;
+						}
+					}
+				}
+				elsif (ref $args{value} eq 'ARRAY') {
 					LASTELEMENT: foreach my $element (@{$args{value}}) {
 						if (_decode_utf8($key) eq $element) {
 							$selected = 'selected="selected"';
@@ -724,8 +740,16 @@ sub _radio_checkbox {
 
 		my @keys;
 		my $sort_options = $args{sort_options}; 
-		if ($sort_options && $sort_options eq 'key') {
-			@keys = sort keys %{$args{options}};
+		if ($sort_options) {
+			if (ref $sort_options eq 'ARRAY') {
+				@keys = @{$sort_options};
+			}
+			elsif ($sort_options eq 'key') {
+				@keys = sort keys %{$args{options}};
+			}
+			else {
+				@keys = sort {$args{options}->{$a} cmp $args{options}->{$b}} keys %{$args{options}};	
+			}
 		}
 		else {
 			@keys = sort {$args{options}->{$a} cmp $args{options}->{$b}} keys %{$args{options}};

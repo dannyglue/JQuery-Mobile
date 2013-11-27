@@ -5,7 +5,7 @@ Revision history for JQuery-Mobile
         Better handle UTF-8.
         Fixed potential issue with duplicated checkbox/radio input field IDs.
         Added fieldcontain div to radios and checkboxes.
-        Enchanced the 'sort_options' parameter for select/radio/checkbox to accept an arrayref as the order of the options.
+        Added the 'sort_options' parameter for select/radio/checkbox to accept an arrayref as the order of the options.
         Included 'input' and 'filter' as allowed data attributes for 'controlgroup' elements in order to make provision for filterable checkboxes.
 0.03    24/07/2013
         Sort hash options by values for checkboxes, radios, and selectboxes by default.
