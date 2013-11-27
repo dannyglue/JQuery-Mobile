@@ -11,7 +11,7 @@ use Encode qw(decode);
 use utf8;
 
 our $VERSION = 0.04;
-# 59.4
+# 60.4
 
 sub new {
 	my ($class, %args) = (@_);
@@ -57,7 +57,7 @@ sub new {
 		'collapsible-set-html-attribute' => ['id', 'class'],
 		'collapsible-set-data-attribute' => ['collapsed-icon', 'content-theme', 'expanded-icon', 'iconpos', 'inset', 'mini', 'theme'],
 		'controlgroup-html-attribute' => ['id', 'class'],
-		'controlgroup-data-attribute' => ['enhance', 'iconpos', 'mini', 'theme', 'type', 'input', 'filter'],
+		'controlgroup-data-attribute' => ['enhance', 'filter', 'iconpos', 'input', 'mini', 'theme', 'type'],
 		'button-html-attribute' => ['id', 'name', 'class', 'maxlength', 'size', 'type', 'value'],
 		'button-html-anchor-attribute' => ['id', 'class', 'href', 'target'],
 		'button-data-attribute' => ['ajax', 'corners', 'dialog', 'direction', 'dom-cache', 'external', 'icon', 'iconpos', 'iconshadow', 'inline', 'mini', 'position-to', 'prefetch', 'rel', 'role', 'shadow', 'theme', 'transition'],
@@ -68,7 +68,7 @@ sub new {
 		'textarea-html-attribute' => ['id', 'name', 'class', 'rows', 'cols', 'readonly', 'disabled', 'title', 'required', 'placeholder', 'title', 'pattern'],
 		'textarea-data-attribute' => ['clear-btn', 'clear-btn-text', 'mini', 'theme'],
 		'select-html-attribute' => ['id', 'class', 'size', 'maxlength', 'readonly', 'disabled', 'title', 'required', 'placeholder', 'title', 'pattern', 'multiple'],
-		'select-data-attribute' => ['icon', 'iconpos', 'inline', 'mini', 'native-menu', 'overlay-theme', 'theme', 'role'],
+		'select-data-attribute' => ['filter', 'icon', 'iconpos', 'inline', 'input', 'mini', 'native-menu', 'overlay-theme', 'role', 'theme'],
 		'radio-checkbox-html-attribute' => ['id', 'class', 'readonly', 'disabled', 'title', 'required', 'placeholder', 'title', 'pattern', 'value'],
 		'radio-checkbox-data-attribute' => ['mini', 'theme'],
 		'rangeslider-html-attribute' => ['id', 'name', 'class'],
