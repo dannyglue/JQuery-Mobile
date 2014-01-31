@@ -4,11 +4,11 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 64;
+plan tests => 61;
 
 use_ok('JQuery::Mobile');
 
-can_ok('JQuery::Mobile', qw(new head header footer table panel popup page pages form listview collapsible collapsible_set navbar button controlgroup input rangeslider select checkbox radio textarea));
+can_ok('JQuery::Mobile', qw(new head header footer table panel popup page pages form listview collapsible collapsibleset navbar button controlgroup input select checkbox radio textarea));
 
 my $jquery_mobile = JQuery::Mobile->new(
 	config => {
@@ -76,7 +76,7 @@ like ($page, qr/<html>/, 'Page HTML');
 like ($page, qr/<head>/, 'Page Head');
 like ($page, qr/<div data-role="page">/, 'Page Start');
 like ($page, qr/<div data-role="header">/, 'Page Header');
-like ($page, qr/<div data-role="content">/, 'Page Content');
+like ($page, qr/<div class="ui-content">/, 'Page Content');
 like ($page, qr/<div data-role="footer" data-position="fixed">/, 'Page Footer');
 
 my $pages = $jquery_mobile->pages(
@@ -125,7 +125,6 @@ my $form = $jquery_mobile->form(
 		{type => 'radio', name => 'gender', options => ['Male', 'Female']},
 		{type => 'checkbox', name => 'country', options => {'AU' => 'Austalia', 'US' => 'United States'}, value => 'AU'},
 		{type => 'select', name => 'heard', label => 'How did you hear about us', options => ['Facebook', 'Twitter', 'Google', 'Radio', 'Other']},
-		{type => 'rangeslider', name => 'range', mini => 'true', from => {label => 'Range', name => 'from', min => 18, max => 100}, to => {name => 'to', min => 18, max => 100}},
 	],
 	controlgroup => {type => 'horizontal'}, # use controlgroup to group the buttons, default to false, accepts "1" or a hashref
 	buttons => [
@@ -136,16 +135,13 @@ my $form = $jquery_mobile->form(
 like ($form, qr/<form action="\/" method="get">/, 'Form Start');
 like ($form, qr/<h1>The Form<\/h1>/, 'Form Title');
 like ($form, qr/<p>A description of the form<\/p>/, 'Form Description');
-like ($form, qr/<div data-role="fieldcontain"><label for="first_name"><strong>First Name\*<\/strong>:<\/label><input id="first_name" name="first_name" required="required" type="text" value="" \/><\/div>/, 'Form First Name');
-like ($form, qr/<div data-role="fieldcontain"><label for="avatar">Avatar:<\/label><input id="avatar" name="avatar" type="file" value="" accept="image\/\*" capture="camera" \/><\/div>/, 'Form Avatar');
-like ($form, qr/<div data-role="fieldcontain"><label for="comment">Comment:<\/label><textarea id="comment" name="comment" rows="8" cols="40"><\/textarea><\/div>/, 'Form Comment');
+like ($form, qr/<div class="ui-field-contain"><label for="first_name"><strong>First Name\*<\/strong>:<\/label><input id="first_name" name="first_name" required="required" type="text" value="" \/><\/div>/, 'Form First Name');
+like ($form, qr/<div class="ui-field-contain"><label for="avatar">Avatar:<\/label><input id="avatar" name="avatar" type="file" value="" accept="image\/\*" capture="camera" \/><\/div>/, 'Form Avatar');
+like ($form, qr/<div class="ui-field-contain"><label for="comment">Comment:<\/label><textarea id="comment" name="comment" rows="8" cols="40"><\/textarea><\/div>/, 'Form Comment');
 like ($form, qr/<legend>Gender:<\/legend><input type="radio" name="gender" id="gender-male-1" value="Male" \/><label for="gender-male-1">Male<\/label><input type="radio" name="gender" id="gender-female-2" value="Female" \/><label for="gender-female-2">Female<\/label>/, 'Form Gender');
 like ($form, qr/<legend>Country:<\/legend><input type="checkbox" name="country" id="country-au-1" value="AU" checked="checked" \/><label for="country-au-1">Austalia<\/label><input type="checkbox" name="country" id="country-us-2" value="US" \/><label for="country-us-2">United States<\/label>/, 'Form Country');
-like ($form, qr/<div data-role="fieldcontain"><label for="heard">How did you hear about us:<\/label><select name="heard" id="heard"><option value="Facebook" >Facebook<\/option><option value="Twitter" >Twitter<\/option><option value="Google" >Google<\/option><option value="Radio" >Radio<\/option><option value="Other" >Other<\/option><\/select><\/div>/, 'Form Heard from');
+like ($form, qr/<div class="ui-field-contain"><label for="heard">How did you hear about us:<\/label><select name="heard" id="heard"><option value="Facebook" >Facebook<\/option><option value="Twitter" >Twitter<\/option><option value="Google" >Google<\/option><option value="Radio" >Radio<\/option><option value="Other" >Other<\/option><\/select><\/div>/, 'Form Heard from');
 like ($form, qr/<div data-role="controlgroup" data-type="horizontal">/, 'Form Controlgroup');
-like ($form, qr/<div data-role="rangeslider" name="range" data-mini="true">/, 'Rangeslider');
-like ($form, qr/<label for="from">Range:<\/label><input id="from" max="100" min="18" name="from" type="range" value="" \/>/, 'Rangeslider From');
-like ($form, qr/<label for="to">To:<\/label><input id="to" max="100" min="18" name="to" type="range" value="" \/>/, 'Rangeslider To');
 like ($form, qr/<input data-icon="arrow-r" data-role="button" data-theme="b" type="submit" value="Submit"\/>/, 'Form Submit Button');
 like ($form, qr/<a data-icon="delete" data-role="button" href="#">Cancel<\/a>/, 'Form Cancel Button');
 like ($form, qr/<\/form>/, 'Form End');
@@ -178,18 +174,18 @@ my $split_list = $jquery_mobile->listview(
 like ($split_list, qr/<li><a data-rel="dialog" data-transition="pop" href="#link-1"><h3>One<\/h3><\/a><a data-theme="e" data-transition="fade" href="#split-link-1">Split Value One<\/a><\/li>/, 'Split List Item');
 
 
-my $collapsible_set = $jquery_mobile->collapsible_set(
+my $collapsibleset = $jquery_mobile->collapsibleset(
 	collapsibles => [
 		{content => '<h3>Item Heading One</h3><p>Item One Content</p>'},
 		{content => '<h3>Item Heading Two</h3><p>Item Two Content</p>'},
 	]
 );
-like ($collapsible_set, qr/<div data-role="collapsible-set">/, 'Collapsible Set Start');
-like ($collapsible_set, qr/<div data-role="collapsible">/, 'Collapsible Start');
-like ($collapsible_set, qr/<h3>Item Heading Two<\/h3><p>Item Two Content<\/p>/, 'Collapsible Two Content');
-like ($collapsible_set, qr/<\/div>/, 'Collapsible End');
+like ($collapsibleset, qr/<div data-role="collapsibleset">/, 'Collapsible Set Start');
+like ($collapsibleset, qr/<div data-role="collapsible">/, 'Collapsible Start');
+like ($collapsibleset, qr/<h3>Item Heading Two<\/h3><p>Item Two Content<\/p>/, 'Collapsible Two Content');
+like ($collapsibleset, qr/<\/div>/, 'Collapsible End');
 
-my $accordion = $jquery_mobile->collapsible_set(    
+my $accordion = $jquery_mobile->collapsibleset(    
 	active => {
 		option => 'title', # what listview item attribute to check for and set it as active 
 		value => 'Menu A Item Two' # open the accordion menu where the listview item has the title: 'Menu A Item Two'
