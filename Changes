@@ -1,12 +1,16 @@
 Revision history for JQuery-Mobile
 
-0.04    26/11/2013
+0.04    31/01/2014
         DEPRECATED obsolete apple-touch-icon* and apple-touch-startup-image configurations in new().
         Better handle UTF-8.
         Fixed potential issue with duplicated checkbox/radio input field IDs.
-        Added fieldcontain div to radios and checkboxes.
         Added the 'sort_options' parameter for select/radio/checkbox to accept an arrayref as the order of the options.
         Included 'input' and 'filter' as allowed data attributes for 'controlgroup' elements in order to make provision for filterable checkboxes.
+        Upgraded to jQuery Mobile 1.4.0
+        Deprecated rangeslider() for jQuery Mobile 1.4.0
+        Renamed collapsible_set() to collapsibleset() for jQuery Mobile 1.4.0
+        Added div with class 'ui-field-contain' to radios and checkboxes for jQuery Mobile 1.4.0
+        Updated POD.
 0.03    24/07/2013
         Sort hash options by values for checkboxes, radios, and selectboxes by default.
 0.02    16/07/2013

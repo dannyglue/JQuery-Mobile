@@ -3,7 +3,7 @@ use strict;
 use warnings;
 no warnings 'uninitialized';
 use Exporter 'import';
-our @EXPORT_OK = qw(new head header footer table panel popup page pages form listview collapsible collapsible_set navbar button controlgroup input rangeslider select checkbox radio textarea);
+our @EXPORT_OK = qw(new head header footer table panel popup page pages form listview collapsible collapsibleset navbar button controlgroup input select checkbox radio textarea);
 
 use Clone qw(clone);
 use HTML::Entities qw(encode_entities);
@@ -11,7 +11,7 @@ use Encode qw(decode);
 use utf8;
 
 our $VERSION = 0.04;
-# 60.4
+# 62.5
 
 sub new {
 	my ($class, %args) = (@_);
@@ -22,8 +22,8 @@ sub new {
 		'head' => 1, # include <html>, <head>, and <body> tag when rendering a page
 		'viewport' => 'width=device-width, initial-scale=1', # default viewport
 		'apple-mobile-web-app-capable' => 1,  # enable as apple web app
-		'jquery-mobile-css' => 'http://code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.min.css',
-		'jquery-mobile-js' => 'http://code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.min.js',
+		'jquery-mobile-css' => 'http://code.jquery.com/mobile/1.4.0/jquery.mobile-1.4.0.min.css',
+		'jquery-mobile-js' => 'http://code.jquery.com/mobile/1.4.0/jquery.mobile-1.4.0.min.js',
 		'jquery' => 'http://code.jquery.com/jquery-1.9.1.min.js',
 		'app-css' => [], # global application CSS files
 		'app-js' => [], # global application JS files
@@ -39,7 +39,7 @@ sub new {
 		'navbar-item-data-attribute' => ['ajax', 'icon', 'iconpos', 'iconshadow','prefetch', 'theme'],
 		'page-html-attribute' => ['id', 'class'],
 		# combine data-attributes for page and dialog
-		'page-data-attribute' => ['add-back-btn', 'back-btn-text', 'back-btn-theme', 'close-btn', 'close-btn-text', 'corners', 'dom-cache', 'enhance', 'overlay-theme', 'role', 'shadow','theme', 'title', 'tolerance', 'url'],
+		'page-data-attribute' => ['add-back-btn', 'back-btn-text', 'back-btn-theme', 'close-btn', 'close-btn-text', 'corners', 'dialog', 'dom-cache', 'enhance', 'overlay-theme', 'role', 'shadow','theme', 'title', 'tolerance', 'url'],
 		'table-html-attribute' => ['id', 'class'],
 		'table-data-attribute' => ['mode'],
 		'table-head-html-attribute' => ['id', 'class'],
@@ -54,8 +54,8 @@ sub new {
 		'listview-item-data-attribute' => ['ajax', 'mini', 'rel', 'theme', 'transition'],
 		'collapsible-html-attribute' => ['id', 'class'],
 		'collapsible-data-attribute' => ['collapsed', 'collapsed-icon', 'content-theme', 'expanded-icon', 'iconpos', 'inset', 'mini', 'theme'],
-		'collapsible-set-html-attribute' => ['id', 'class'],
-		'collapsible-set-data-attribute' => ['collapsed-icon', 'content-theme', 'expanded-icon', 'iconpos', 'inset', 'mini', 'theme'],
+		'collapsibleset-html-attribute' => ['id', 'class'],
+		'collapsibleset-data-attribute' => ['collapsed-icon', 'content-theme', 'expanded-icon', 'iconpos', 'inset', 'mini', 'theme'],
 		'controlgroup-html-attribute' => ['id', 'class'],
 		'controlgroup-data-attribute' => ['enhance', 'filter', 'iconpos', 'input', 'mini', 'theme', 'type'],
 		'button-html-attribute' => ['id', 'name', 'class', 'maxlength', 'size', 'type', 'value'],
@@ -71,8 +71,6 @@ sub new {
 		'select-data-attribute' => ['filter', 'icon', 'iconpos', 'inline', 'input', 'mini', 'native-menu', 'overlay-theme', 'role', 'theme'],
 		'radio-checkbox-html-attribute' => ['id', 'class', 'readonly', 'disabled', 'title', 'required', 'placeholder', 'title', 'pattern', 'value'],
 		'radio-checkbox-data-attribute' => ['mini', 'theme'],
-		'rangeslider-html-attribute' => ['id', 'name', 'class'],
-		'rangeslider-data-attribute' => ['highlight', 'mini', 'theme', 'track-theme'],
 		'label' => sub {
 			my $args = shift;
 			return '<strong>' . $args->{label} . '</strong>' if $args->{required};
@@ -279,7 +277,7 @@ sub page {
 	my $page = '    <div' . $attributes . '>' . "\n";
 	$page .= $self->header(%{$args{header}}) if $args{header};
 	$page .= $self->panel(%{$args{panel}}) if $args{panel};
-	$page .= '      <div data-role="content">' . "\n" . $args{content} . "\n" . '      </div><!-- /content -->' . "\n";
+	$page .= '      <div class="ui-content">' . "\n" . $args{content} . "\n" . '      </div><!-- /content -->' . "\n";
 	$page .= $args{after} if $args{after};
 	$page .= $self->footer(%{$args{footer}}) if $args{footer};
 	$page .= '    </div><!-- /page -->' . "\n";
@@ -304,7 +302,7 @@ sub pages {
 	return "<!DOCTYPE html>\n<html>\n" . $self->head() . "  <body>\n" . $pages . "  </body>\n</html>";
 }
 
-sub collapsible_set {
+sub collapsibleset {
 	my ($self, %args) = @_;
 
 	if ($args{collapsibles} && @{$args{collapsibles}}) {
@@ -320,11 +318,11 @@ sub collapsible_set {
 		$args{content} ||= '          <p>Collapsible Set Content</p>';	
 	}	
 
-	my $attributes = _html_attribute('', $self->{config}->{'collapsible-set-html-attribute'}, \%args);
-	$attributes = _data_attribute($attributes, $self->{config}->{'collapsible-set-data-attribute'}, \%args);
+	my $attributes = _html_attribute('', $self->{config}->{'collapsibleset-html-attribute'}, \%args);
+	$attributes = _data_attribute($attributes, $self->{config}->{'collapsibleset-data-attribute'}, \%args);
 
-	my $collapsible_set = '        <div data-role="collapsible-set"' . $attributes . '>' . "\n" . $args{content} . "\n" . '        </div>' . "\n";
-	return $collapsible_set;
+	my $collapsibleset = '        <div data-role="collapsibleset"' . $attributes . '>' . "\n" . $args{content} . "\n" . '        </div>' . "\n";
+	return $collapsibleset;
 }
 
 sub collapsible {
@@ -503,7 +501,7 @@ sub form {
 
 	if ($args{fields}) {
 		foreach my $field (@{$args{fields}}) {
-			if ($field->{type} && $field->{type} =~ /^(select|radio|checkbox|textarea|rangeslider)$/) {
+			if ($field->{type} && $field->{type} =~ /^(select|radio|checkbox|textarea)$/) {
 				my $type = delete $field->{type};
 				$content .= $self->$type(%{$field});
 			}
@@ -544,27 +542,6 @@ sub form {
 	return $form;
 }
 
-sub rangeslider {
-	my ($self, %args) = @_;
-
-	my $attributes = _html_attribute('', $self->{config}->{'rangeslider-html-attribute'}, \%args);
-	$attributes = _data_attribute($attributes, $self->{config}->{'rangeslider-data-attribute'}, \%args);
-
-	$args{from}->{type} = 'range';
-	$args{to}->{type} = 'range';
-	my $from = '              ' . $self->_input(%{$args{from}}) . "\n";
-	my $to = '              ' . $self->_input(%{$args{to}});
-
-	$args{container_role} ||= 'fieldcontain';
-	my $invalid = $args{invalid} ? $self->{config}->{invalid}->(\%args) : '';
-
-	my $rangeslider = '          <div data-role="' . $args{container_role} . '">' . "\n" . '            <div data-role="rangeslider"' . $attributes . '>' . "\n";
-	$rangeslider .= $from . $to . $invalid . "\n";
-	$rangeslider .= "            </div>\n          </div>\n";
-
-	return $rangeslider;
-}
-
 sub _input {
 	my ($self, %args) = @_;
 	$args{type} ||= 'text';
@@ -586,9 +563,9 @@ sub input {
 	my $input = $self->_input(%args);
 	return $input if $args{type} eq 'hidden';
 
-	$args{container_role} ||= 'fieldcontain';
+	$args{container_class} ||= 'ui-field-contain';
 	my $invalid = $args{invalid} ? $self->{config}->{invalid}->(\%args) : '';
-	return '          <div data-role="' . $args{container_role} . '">' . $input . $invalid . '</div>' . "\n";
+	return '          <div class="' . $args{container_class} . '">' . $input . $invalid . '</div>' . "\n";
 }
 
 sub textarea {
@@ -604,9 +581,9 @@ sub textarea {
 	my $attributes = _html_attribute('', $self->{config}->{'textarea-html-attribute'}, \%args);
 	$attributes = _data_attribute($attributes, $self->{config}->{'textarea-data-attribute'}, \%args);
 
-	$args{container_role} ||= 'fieldcontain';
+	$args{container_class} ||= 'ui-field-contain';
 	my $invalid = $args{invalid} ? $self->{config}->{invalid}->(\%args) : '';
-	return '          <div data-role="' . $args{container_role} . '"><label for="' . $args{id} . '">' . $self->{config}->{label}->(\%args) .  ':</label><textarea' . $attributes . '>' . $args{value} . '</textarea>' . $invalid . '</div>' . "\n";
+	return '          <div class="' . $args{container_class} . '"><label for="' . $args{id} . '">' . $self->{config}->{label}->(\%args) .  ':</label><textarea' . $attributes . '>' . $args{value} . '</textarea>' . $invalid . '</div>' . "\n";
 }
 
 sub select {
@@ -707,9 +684,9 @@ sub select {
 		$options = $args{options};
 	}
 
-	$args{container_role} ||= 'fieldcontain';
+	$args{container_class} ||= 'ui-field-contain';
 	my $invalid = $args{invalid} ? $self->{config}->{invalid}->(\%args) : '';
-	return '          <div data-role="' . $args{container_role} . '"><label for="' . $args{id} . '">' . $self->{config}->{label}->(\%args) .  ':</label><select name="' . $args{name} . '"' . $attributes . '>' . $options . '</select>' . $invalid . '</div>' . "\n";
+	return '          <div class="' . $args{container_class} . '"><label for="' . $args{id} . '">' . $self->{config}->{label}->(\%args) .  ':</label><select name="' . $args{name} . '"' . $attributes . '>' . $options . '</select>' . $invalid . '</div>' . "\n";
 }
 
 sub radio {
@@ -838,8 +815,8 @@ sub _radio_checkbox {
 
 	my $controlgroup_content = $self->controlgroup(%{$controlgroup});
 
-	$args{container_role} ||= 'fieldcontain';
-	return '          <div data-role="' . $args{container_role} . '">' . $controlgroup_content . '</div>' . "\n";
+	$args{container_class} ||= 'ui-field-contain';
+	return '          <div class="' . $args{container_class} . '">' . $controlgroup_content . '</div>' . "\n";
 }
 
 sub _header_footer_attribute {
@@ -986,8 +963,8 @@ Here is a list of optional parameters when instantiating a JQuery::Mobile object
       'head' => 1, # include <html>, <head>, and <body> tag when rendering a page
       'viewport' => 'width=device-width, initial-scale=1', # default viewport
       'apple-mobile-web-app-capable' => 1, # enable as apple web app
-      'jquery-mobile-css' => 'http://code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.min.css',
-      'jquery-mobile-js' => 'http://code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.min.js',
+      'jquery-mobile-css' => 'http://code.jquery.com/mobile/1.4.0/jquery.mobile-1.4.0.min.css',
+      'jquery-mobile-js' => 'http://code.jquery.com/mobile/1.4.0/jquery.mobile-1.4.0.min.js',
       'jquery' => 'http://code.jquery.com/jquery-1.9.1.min.js',
       'app-css' => [], # global application CSS files
       'app-js' => [], # global application JS files
@@ -1010,7 +987,7 @@ The allowed HTML and data-* attributes for each UI component can be customised. 
       'navbar-item-data-attribute' => ['ajax', 'icon', 'iconpos', 'iconshadow','prefetch', 'theme'],
       'page-html-attribute' => ['id', 'class'],
       # combine data-attributes for page and dialog
-      'page-data-attribute' => ['add-back-btn', 'back-btn-text', 'back-btn-theme', 'close-btn', 'close-btn-text', 'corners', 'dom-cache', 'enhance', 'overlay-theme', 'role', 'shadow','theme', 'title', 'tolerance', 'url'],
+      'page-data-attribute' => ['add-back-btn', 'back-btn-text', 'back-btn-theme', 'close-btn', 'close-btn-text', 'corners', 'dialog', 'dom-cache', 'enhance', 'overlay-theme', 'role', 'shadow','theme', 'title', 'tolerance', 'url'],
       'popup-html-attribute' => ['id', 'class'],
       'popup-data-attribute' => ['corners', 'overlay-theme', 'shadow', 'theme', 'tolerance', 'position-to', 'rel', 'role', 'transition'],
       'listview-html-attribute' => ['id', 'class'],
@@ -1019,8 +996,8 @@ The allowed HTML and data-* attributes for each UI component can be customised. 
       'listview-item-data-attribute' => ['ajax', 'mini', 'rel', 'theme', 'transition'],
       'collapsible-html-attribute' => ['id', 'class'],
       'collapsible-data-attribute' => ['collapsed', 'collapsed-icon', 'content-theme', 'expanded-icon', 'iconpos', 'inset', 'mini', 'theme'],
-      'collapsible-set-html-attribute' => ['id', 'class'],
-      'collapsible-set-data-attribute' => ['collapsed-icon', 'content-theme', 'expanded-icon', 'iconpos', 'inset', 'mini', 'theme'],
+      'collapsibleset-html-attribute' => ['id', 'class'],
+      'collapsibleset-data-attribute' => ['collapsed-icon', 'content-theme', 'expanded-icon', 'iconpos', 'inset', 'mini', 'theme'],
       'controlgroup-html-attribute' => ['id', 'class'],
       'controlgroup-data-attribute' => ['enhance', 'iconpos', 'theme', 'type'],
       'button-html-attribute' => ['id', 'name', 'class', 'maxlength', 'size', 'type', 'value'],
@@ -1108,7 +1085,7 @@ C<page()> generates a container divs. It accepts the following parameters:
 
 =item C<role>
 
-C<role> can be either "page" or "dialog", defaulted to "page".
+C<role> defaulted to "page".
 
 =item C<head>
 
@@ -1161,7 +1138,7 @@ C<pages> accepts an arrayref of parameters acceptable by C<page()>.
 
   print $jquery_mobile->pages(
     pages => [
-      {id => 'page-1', header => {content => '<h1>Page One Heading</h1>'}, content => 'Cillum dolore eu fugiat nulla pariatur. ' . $jquery_mobile->button(icon => 'arrow-r', value => 'Page 2', href => '#page-2')},
+      {id => 'page-1', header => {content => '<h1>Page One Heading</h1>'}, content => 'Cillum dolore eu fugiat nulla pariatur. ' . $jquery_mobile->button(icon => 'carat-r', value => 'Page 2', href => '#page-2')},
       {id => 'page-2', header => {content => '<h1>Page Two Heading</h1>'}, content => 'Excepteur sint occaecat cupidatat non'},
     ]
   );
@@ -1185,11 +1162,10 @@ C<form()> generates web forms. It accepts attributes defined in C<form-html-attr
       {type => 'radio', name => 'gender', options => ['Male', 'Female']},
       {type => 'checkbox', name => 'country', options => {'AU' => 'Austalia', 'US' => 'United States'}, value => 'AU'},
       {type => 'select', name => 'heard', label => 'How did you hear about us', options => ['Facebook', 'Twitter', 'Google', 'Radio', 'Other']},
-      {type => 'rangeslider', name => 'range', mini => 'true', from => {label => 'Range', name => 'from', min => 18, max => 100}, to => {name => 'to', min => 18, max => 100}},
     ],
     controlgroup => {type => 'horizontal'}, # use controlgroup to group the buttons, default to false, accepts "1" or a hashref
     buttons => [
-      {value => 'Submit', type => 'submit', icon => 'arrow-r', theme => 'b'},
+      {value => 'Submit', type => 'submit', icon => 'carat-r', theme => 'b'},
       {value => 'Cancel', href => '#', icon => 'delete'}
     ],
   );
@@ -1218,7 +1194,7 @@ Javascript validation can be added to the form using jQuery-Mobilevalidate L<htt
       {type => 'select', name => 'heard', label => 'How did you hear about us', options => ['Facebook', 'Twitter', 'Google', 'Radio', 'Other'], required => 'required'},
     ],
     buttons => [
-      {value => 'Submit', type => 'submit', icon => 'arrow-r', theme => 'b'},
+      {value => 'Submit', type => 'submit', icon => 'carat-r', theme => 'b'},
     ],
   );
 
@@ -1314,13 +1290,13 @@ C<collapsible()> generates collapsible blocks. It accepts attributes defined in 
     content => $collapsible
   );
 
-C<collapsible()> also accepts C<title>, C<active>, and C<listview> as parameters for creating accordion menus via C<collapsible_set()>. See C<collapsible_set()> below.
+C<collapsible()> also accepts C<title>, C<active>, and C<listview> as parameters for creating accordion menus via C<collapsibleset()>. See C<collapsibleset()> below.
 
-=head2 C<collapsible_set>
+=head2 C<collapsibleset>
 
-C<collapsible_set()> generates collapsible sets. It accepts attributes defined in C<collapsible-set-html-attribute> and C<collapsible-set-data-attribute>. Collapsible content can be passed via the C<collapsibles> parameter:
+C<collapsibleset()> generates collapsible sets. It accepts attributes defined in C<collapsibleset-html-attribute> and C<collapsibleset-data-attribute>. Collapsible content can be passed via the C<collapsibles> parameter:
 
-  my $collapsible_set = $jquery_mobile->collapsible_set(    
+  my $collapsibleset = $jquery_mobile->collapsibleset(    
     collapsibles => [
       {content => '<h3>Item Heading One</h3><p>Item One Content</p>'},
       {content => '<h3>Item Heading Two</h3><p>Item Two Content</p>'},
@@ -1328,12 +1304,12 @@ C<collapsible_set()> generates collapsible sets. It accepts attributes defined i
   );
 
   print $jquery_mobile->page(
-    content => $collapsible_set
+    content => $collapsibleset
   );
 
-C<collapsible_set()> can also create accordion menus when using with C<listview()>:
+C<collapsibleset()> can also create accordion menus when using with C<listview()>:
 
-  my $accordion = $jquery_mobile->collapsible_set(    
+  my $accordion = $jquery_mobile->collapsibleset(    
     active => {
       option => 'title', # what listview item attribute to check for and set it as active 
       value => 'Menu A Item Two' # open the accordion menu where the listview item has the title: 'Menu A Item Two'
@@ -1394,7 +1370,7 @@ C<button()> generates C<anchor> and C<input> buttons.
     href => 'https://www.google.com',
     mini => 'true',
     value => 'Learn More',
-    icon => 'arrow-r',
+    icon => 'carat-r',
     iconpos => 'right',
     inline => 'true',
     ajax => 'false',
@@ -1444,7 +1420,7 @@ C<input()> generates various input elements, such as text, email, password, and 
     capture => 'camera'  # allow taking new pictures (iOS 6+)
   );
 
-The generated HTML conforms to jQuery Mobile form elements. For instance, inputs are wrapped in a 'fieldcontainer' div.
+inputs/select/checkbox/radio are wrapped in a container div with class 'ui-field-contain' by default, this can be disabled by changing the C<container_class> parameter
 
 =head2 C<select>
 
@@ -1485,19 +1461,6 @@ C<textarea()> generates textareas. It accepts attributes defined in C<textarea-h
     rows => '3',
     cols => '50'
   );
-
-=head2 C<rangeslider>
-
-C<rangeslider()> generates rangesliders. It accepts attributes defined in C<rangeslider-html-attribute> and C<rangeslider-data-attribute>.
-
-  print $jquery_mobile->rangeslider(
-    type => 'rangeslider', 
-    name => 'range', 
-    mini => 'true', 
-    from => {
-      label => 'Range', name => 'from', min => 18, max => 100}, to => {name => 'to', min => 18, max => 100}
-  );
-
 
 =head1 SEE ALSO
 
