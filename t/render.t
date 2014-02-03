@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 61;
+plan tests => 64;
 
 use_ok('JQuery::Mobile');
 
@@ -226,6 +226,20 @@ like ($navbar, qr/<ul>/, 'Navbar List Start');
 like ($navbar, qr/<li><a href="#" class="ui-btn-active ui-btn-persist">Item Two<\/a><\/li>/, 'Navbar List Active Persist Item');
 like ($navbar, qr/<\/ul>/, 'Navbar List End');
 like ($navbar, qr/<\/div>/, 'Navbar End');
+
+
+my $tabs = $jquery_mobile->tabs(
+	tabs => [
+		{name => 'Tab One', content => '<p>First Tab Content</p>'},
+		{name => 'Tab Two', content => '<p>Second Tab Content</p>'},
+		{name => 'Tab Three', content => '<p>Third Tab Content</p>'}
+	]
+);
+
+like ($tabs, qr/<div data-role="tabs">/, 'Tab Start');
+like ($tabs, qr/<li><a href="#fragment-3">Tab Three<\/a><\/li>/, 'Tab Three Navbar');
+like ($tabs, qr/<div id="fragment-3">/, 'Tab Three Content');
+
 
 my $anchor_button = $jquery_mobile->button(
 	role => 'button', # could be 'button' or 'none', defaulted to 'button'

@@ -3,7 +3,7 @@ use strict;
 use warnings;
 no warnings 'uninitialized';
 use Exporter 'import';
-our @EXPORT_OK = qw(new head header footer table panel popup page pages form listview collapsible collapsibleset navbar button controlgroup input select checkbox radio textarea);
+our @EXPORT_OK = qw(new head header footer table panel popup page pages form listview collapsible collapsibleset navbar tabs button controlgroup input select checkbox radio textarea);
 
 use Clone qw(clone);
 use HTML::Entities qw(encode_entities);
@@ -11,7 +11,7 @@ use Encode qw(decode);
 use utf8;
 
 our $VERSION = 0.04;
-# 62.5
+# 63.6
 
 sub new {
 	my ($class, %args) = (@_);
@@ -199,6 +199,22 @@ sub navbar {
 	$navbar .= '          </ul>' . "\n";
 	$navbar .= '        </div><!-- /navbar -->';
 	return $navbar;
+}
+
+sub tabs {
+	my ($self, %args) = @_;
+
+	my $navbar = $args{navbar} || {};
+	my $tabs;
+	my $count = 1;
+
+	foreach my $tab (@{$args{tabs}}) {
+		push @{$navbar->{items}}, {href => '#fragment-' . $count, value => $tab->{name}};
+		push @{$tabs}, '        <div id="fragment-' . $count . '">' . "\n          " . $tab->{content} . "\n        </div>";
+		$count++;
+	}
+
+	return '        <div data-role="tabs">' . "\n" . $self->navbar(%{$navbar}) . "\n" . join("\n", @{$tabs}) . "\n        </div><!-- /tabs -->";
 }
 
 sub panel {
@@ -1359,6 +1375,24 @@ C<navbar()> generates navbars that are often used in C<header()> and C<footer()>
 C<items> accepts an arrayref of items (i.e. generates HTML C<li> tags). Navbar item attributes are controlled by C<navbar-item-data-attribute> and C<navbar-item-html-attribute>.
 C<active> adds the 'ui-btn-active' class to the item's CSS.
 C<persist> adds the 'ui-btn-persist' class to the item's CSS.
+
+
+=head2 C<tabs>
+
+C<tabs()> generates tabs.
+
+  my $tabs = $jquery_mobile->tabs(
+    tabs => [
+      {name => 'Tab One', content => '<p>First Tab Content</p>'},
+      {name => 'Tab Two', content => '<p>Second Tab Content</p>'},
+      {name => 'Tab Three', content => '<p>Third Tab Content</p>'}
+    ]
+  );
+
+  print $jquery_mobile->page(
+    content => $tabs
+  );
+
 
 =head2 C<button>
 

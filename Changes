@@ -10,6 +10,7 @@ Revision history for JQuery-Mobile
         Deprecated rangeslider() for jQuery Mobile 1.4.0
         Renamed collapsible_set() to collapsibleset() for jQuery Mobile 1.4.0
         Added div with class 'ui-field-contain' to radios and checkboxes for jQuery Mobile 1.4.0
+        Added tabs widget.
         Updated POD.
 0.03    24/07/2013
         Sort hash options by values for checkboxes, radios, and selectboxes by default.
