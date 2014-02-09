@@ -135,12 +135,12 @@ my $form = $jquery_mobile->form(
 like ($form, qr/<form action="\/" method="get">/, 'Form Start');
 like ($form, qr/<h1>The Form<\/h1>/, 'Form Title');
 like ($form, qr/<p>A description of the form<\/p>/, 'Form Description');
-like ($form, qr/<div class="ui-field-contain"><label for="first_name"><strong>First Name\*<\/strong>:<\/label><input id="first_name" name="first_name" required="required" type="text" value="" \/><\/div>/, 'Form First Name');
-like ($form, qr/<div class="ui-field-contain"><label for="avatar">Avatar:<\/label><input id="avatar" name="avatar" type="file" value="" accept="image\/\*" capture="camera" \/><\/div>/, 'Form Avatar');
-like ($form, qr/<div class="ui-field-contain"><label for="comment">Comment:<\/label><textarea id="comment" name="comment" rows="8" cols="40"><\/textarea><\/div>/, 'Form Comment');
-like ($form, qr/<legend>Gender:<\/legend><input type="radio" name="gender" id="gender-male-1" value="Male" \/><label for="gender-male-1">Male<\/label><input type="radio" name="gender" id="gender-female-2" value="Female" \/><label for="gender-female-2">Female<\/label>/, 'Form Gender');
-like ($form, qr/<legend>Country:<\/legend><input type="checkbox" name="country" id="country-au-1" value="AU" checked="checked" \/><label for="country-au-1">Austalia<\/label><input type="checkbox" name="country" id="country-us-2" value="US" \/><label for="country-us-2">United States<\/label>/, 'Form Country');
-like ($form, qr/<div class="ui-field-contain"><label for="heard">How did you hear about us:<\/label><select name="heard" id="heard"><option value="Facebook" >Facebook<\/option><option value="Twitter" >Twitter<\/option><option value="Google" >Google<\/option><option value="Radio" >Radio<\/option><option value="Other" >Other<\/option><\/select><\/div>/, 'Form Heard from');
+like ($form, qr/<div class="ui-field-contain"><label for="first_name"><strong>First Name\*<\/strong><\/label><input id="first_name" name="first_name" required="required" type="text" value="" \/><\/div>/, 'Form First Name');
+like ($form, qr/<div class="ui-field-contain"><label for="avatar">Avatar<\/label><input id="avatar" name="avatar" type="file" value="" accept="image\/\*" capture="camera" \/><\/div>/, 'Form Avatar');
+like ($form, qr/<div class="ui-field-contain"><label for="comment">Comment<\/label><textarea id="comment" name="comment" rows="8" cols="40"><\/textarea><\/div>/, 'Form Comment');
+like ($form, qr/<legend>Gender<\/legend><input type="radio" name="gender" id="gender-male-1" value="Male" \/><label for="gender-male-1">Male<\/label><input type="radio" name="gender" id="gender-female-2" value="Female" \/><label for="gender-female-2">Female<\/label>/, 'Form Gender');
+like ($form, qr/<legend>Country<\/legend><input type="checkbox" name="country" id="country-au-1" value="AU" checked="checked" \/><label for="country-au-1">Austalia<\/label><input type="checkbox" name="country" id="country-us-2" value="US" \/><label for="country-us-2">United States<\/label>/, 'Form Country');
+like ($form, qr/<div class="ui-field-contain"><label for="heard">How did you hear about us<\/label><select name="heard" id="heard"><option value="Facebook" >Facebook<\/option><option value="Twitter" >Twitter<\/option><option value="Google" >Google<\/option><option value="Radio" >Radio<\/option><option value="Other" >Other<\/option><\/select><\/div>/, 'Form Heard from');
 like ($form, qr/<div data-role="controlgroup" data-type="horizontal">/, 'Form Controlgroup');
 like ($form, qr/<input data-icon="arrow-r" data-role="button" data-theme="b" type="submit" value="Submit"\/>/, 'Form Submit Button');
 like ($form, qr/<a data-icon="delete" data-role="button" href="#">Cancel<\/a>/, 'Form Cancel Button');

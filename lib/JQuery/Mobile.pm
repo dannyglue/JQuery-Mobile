@@ -570,7 +570,7 @@ sub _input {
 	$attributes = _data_attribute($attributes, $self->{config}->{'input-data-attribute'}, \%args);
 
 	return '          <input' . $attributes . ' />' . "\n" if $args{type} eq 'hidden';
-	return '<label for="' . $args{id} . '">' . $self->{config}->{label}->(\%args) .  ':</label><input' . $attributes . ' />';
+	return '<label for="' . $args{id} . '">' . $self->{config}->{label}->(\%args) .  '</label><input' . $attributes . ' />';
 }
 
 sub input {
@@ -599,7 +599,7 @@ sub textarea {
 
 	$args{container_class} ||= 'ui-field-contain';
 	my $invalid = $args{invalid} ? $self->{config}->{invalid}->(\%args) : '';
-	return '          <div class="' . $args{container_class} . '"><label for="' . $args{id} . '">' . $self->{config}->{label}->(\%args) .  ':</label><textarea' . $attributes . '>' . $args{value} . '</textarea>' . $invalid . '</div>' . "\n";
+	return '          <div class="' . $args{container_class} . '"><label for="' . $args{id} . '">' . $self->{config}->{label}->(\%args) .  '</label><textarea' . $attributes . '>' . $args{value} . '</textarea>' . $invalid . '</div>' . "\n";
 }
 
 sub select {
@@ -702,7 +702,7 @@ sub select {
 
 	$args{container_class} ||= 'ui-field-contain';
 	my $invalid = $args{invalid} ? $self->{config}->{invalid}->(\%args) : '';
-	return '          <div class="' . $args{container_class} . '"><label for="' . $args{id} . '">' . $self->{config}->{label}->(\%args) .  ':</label><select name="' . $args{name} . '"' . $attributes . '>' . $options . '</select>' . $invalid . '</div>' . "\n";
+	return '          <div class="' . $args{container_class} . '"><label for="' . $args{id} . '">' . $self->{config}->{label}->(\%args) .  '</label><select name="' . $args{name} . '"' . $attributes . '>' . $options . '</select>' . $invalid . '</div>' . "\n";
 }
 
 sub radio {
@@ -827,7 +827,7 @@ sub _radio_checkbox {
 	
 	my $controlgroup = clone ($args{controlgroup});
 	$controlgroup->{fieldset} = 1;
-	$controlgroup->{content} ||= '  <legend>' . $self->{config}->{label}->(\%args) .  ':</legend>' . $options . $invalid;
+	$controlgroup->{content} ||= '  <legend>' . $self->{config}->{label}->(\%args) .  '</legend>' . $options . $invalid;
 
 	my $controlgroup_content = $self->controlgroup(%{$controlgroup});
 
