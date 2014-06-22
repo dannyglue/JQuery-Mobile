@@ -11,7 +11,7 @@ use Encode qw(decode);
 use utf8;
 
 our $VERSION = 0.04;
-# 63.6
+# 65.6
 
 sub new {
 	my ($class, %args) = (@_);
@@ -22,9 +22,9 @@ sub new {
 		'head' => 1, # include <html>, <head>, and <body> tag when rendering a page
 		'viewport' => 'width=device-width, initial-scale=1', # default viewport
 		'apple-mobile-web-app-capable' => 1,  # enable as apple web app
-		'jquery-mobile-css' => 'http://code.jquery.com/mobile/1.4.0/jquery.mobile-1.4.0.min.css',
-		'jquery-mobile-js' => 'http://code.jquery.com/mobile/1.4.0/jquery.mobile-1.4.0.min.js',
-		'jquery' => 'http://code.jquery.com/jquery-1.9.1.min.js',
+		'jquery-mobile-css' => 'http://code.jquery.com/mobile/1.4.2/jquery.mobile-1.4.2.min.css',
+		'jquery-mobile-js' => 'http://code.jquery.com/mobile/1.4.2/jquery.mobile-1.4.2.min.js',
+		'jquery' => 'http://code.jquery.com/jquery-1.10.2.min.js',
 		'app-css' => [], # global application CSS files
 		'app-js' => [], # global application JS files
 		'app-inline-css' => '      span.invalid{color:#F00000;line-height: 1.5;}', # inline CSS code
@@ -61,7 +61,7 @@ sub new {
 		'button-html-attribute' => ['id', 'name', 'class', 'maxlength', 'size', 'type', 'value'],
 		'button-html-anchor-attribute' => ['id', 'class', 'href', 'target'],
 		'button-data-attribute' => ['ajax', 'corners', 'dialog', 'direction', 'dom-cache', 'external', 'icon', 'iconpos', 'iconshadow', 'inline', 'mini', 'position-to', 'prefetch', 'rel', 'role', 'shadow', 'theme', 'transition'],
-		'form-html-attribute' => ['id', 'action', 'class', 'enctype', 'method'],
+		'form-html-attribute' => ['id', 'action', 'class', 'enctype', 'method', 'name', 'novalidate', 'autocomplete'],
 		'form-data-attribute' => ['enhance', 'theme', 'ajax'],
 		'input-html-attribute' => ['id', 'class', 'disabled', 'max', 'maxlength', 'min', 'name', 'pattern', 'placeholder', 'readonly', 'required', 'size', 'type', 'value', 'accept', 'capture'],
 		'input-data-attribute' => ['clear-btn', 'clear-btn-text', 'corners', 'highlight', 'icon', 'iconpos', 'iconshadow', 'inline', 'mini', 'shadow', 'theme', 'track-theme'],
@@ -979,9 +979,9 @@ Here is a list of optional parameters when instantiating a JQuery::Mobile object
       'head' => 1, # include <html>, <head>, and <body> tag when rendering a page
       'viewport' => 'width=device-width, initial-scale=1', # default viewport
       'apple-mobile-web-app-capable' => 1, # enable as apple web app
-      'jquery-mobile-css' => 'http://code.jquery.com/mobile/1.4.0/jquery.mobile-1.4.0.min.css',
-      'jquery-mobile-js' => 'http://code.jquery.com/mobile/1.4.0/jquery.mobile-1.4.0.min.js',
-      'jquery' => 'http://code.jquery.com/jquery-1.9.1.min.js',
+      'jquery-mobile-css' => 'http://code.jquery.com/mobile/1.4.2/jquery.mobile-1.4.2.min.css',
+      'jquery-mobile-js' => 'http://code.jquery.com/mobile/1.4.2/jquery.mobile-1.4.2.min.js',
+      'jquery' => 'http://code.jquery.com/jquery-1.10.2.min.js',
       'app-css' => [], # global application CSS files
       'app-js' => [], # global application JS files
       'app-inline-css' => '      span.invalid{color:#F00000;line-height: 1.5;}', # inline CSS code
